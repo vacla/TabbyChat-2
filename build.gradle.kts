@@ -3,7 +3,7 @@ import java.util.Date
 
 plugins {
     `java-library`
-    id("net.minecraftforge.gradle") version "3.0.130"
+    id("net.minecraftforge.gradle") version "3.0.180"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
@@ -59,7 +59,11 @@ minecraft {
         }
     }
 }
-
+tasks.register("printClasspath") {
+    doLast {
+        configurations.compileClasspath.forEach { println("/"+ (it.toString().replace("\\","/")) + "\",")}
+    }
+}
 tasks {
 
     getByName<Jar>("jar") {
