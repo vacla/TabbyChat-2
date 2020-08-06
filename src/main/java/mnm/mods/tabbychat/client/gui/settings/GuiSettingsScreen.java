@@ -18,8 +18,9 @@ import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.layout.VerticalLayout;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -46,7 +47,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     private SettingPanel<?> selectedSetting;
 
     public GuiSettingsScreen(@Nullable Channel channel) {
-        super(new StringTextComponent("Settings"));
+        super(new LiteralText("Settings"));
         if (channel != DefaultChannel.INSTANCE) {
             selectedSetting = new GuiSettingsChannel((AbstractChannel) channel);
         }
@@ -80,7 +81,7 @@ public class GuiSettingsScreen extends ComponentScreen {
         GuiButton close = new GuiButton("Close") {
             @Override
             public void onClick(double mouseX, double mouseY) {
-                mc.displayGuiScreen(null);
+                mc.openScreen(null);
             }
         };
         close.setLocation(new Location(0, 0, 40, 10));
@@ -119,7 +120,7 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void init(Minecraft mc, int width, int height) {
+    public void init(MinecraftClient mc, int width, int height) {
         this.panels.forEach(GuiPanel::clear);
         super.init(mc, width, height);
     }
@@ -143,11 +144,11 @@ public class GuiSettingsScreen extends ComponentScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float tick) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float tick) {
         // drawDefaultBackground();
         ILocation rect = panel.getLocation();
-        fill(rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
-        super.render(mouseX, mouseY, tick);
+        fill(matrixStack, rect.getXPos(), rect.getYPos(), rect.getXWidth(), rect.getYHeight(), Integer.MIN_VALUE);
+        super.render(matrixStack, mouseX, mouseY, tick);
     }
 
     private void selectSetting(SettingPanel<?> setting) {

@@ -8,15 +8,20 @@ import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.client.gui.component.IGuiEventListenerDelegate;
+import mnm.mods.tabbychat.mixin.MixinTextFieldWidget;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
 import mnm.mods.tabbychat.util.text.FancyFontRenderer;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,11 +33,11 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     private static final TexturedModal MODAL = new TexturedModal(ChatBox.GUI_LOCATION, 0, 219, 254, 37);
 
-    private FontRenderer fr = mc.fontRenderer;
+    private TextRenderer fr = mc.textRenderer;
     // Dummy textField
-    private GuiText textField = new GuiText(new TextFieldWidget(fr, 0, 0, 0, 0, "input") {
+    private GuiText textField = new GuiText(new TextFieldWidget(fr, 0, 0, 0, 0, new LiteralText("input")) {
         @Override
-        public void render(int x, int y, float parTicks) {
+        public void render(MatrixStack matrixStack, int x, int y, float parTicks) {
             // noop
         }
 
@@ -51,14 +56,14 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     TextBox() {
         this.spellcheck = TabbyChatClient.getInstance().getSpellcheck();
 
-        textField.getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH);
-        textField.getTextField().setCanLoseFocus(false);
-        textField.getTextField().setEnableBackgroundDrawing(false);
-        textField.getTextField().setFocused2(true);
+        textField.getTextField().setMaxLength(ChatManager.MAX_CHAT_LENGTH);
+        textField.getTextField().setFocusUnlocked(false);
+        textField.getTextField().setHasBorder(false);
+        textField.getTextField().setSelected(true);
     }
 
     @Override
-    public IGuiEventListener delegate() {
+    public Element delegate() {
         return textField;
     }
 
@@ -69,17 +74,17 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         GlStateManager.enableBlend();
         drawModalCorners(MODAL);
         GlStateManager.disableBlend();
 
-        drawText();
-        drawCursor();
+        drawText(matrixStack);
+        drawCursor(matrixStack);
 
     }
 
-    private void drawCursor() {
+    private void drawCursor(MatrixStack matrixStack) {
         TextFieldWidget textField = this.textField.getTextField();
 
         // keeps track of all the characters. Used to compensate for spaces
@@ -89,7 +94,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         int line = 0;
 
         // The position of the cursor
-        int pos = textField.getCursorPosition();
+        int pos = textField.getCursor();
         // the position of the selection
         int sel = pos + textField.getSelectedText().length();
 
@@ -99,20 +104,20 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
         ILocation loc = getLocation();
 
-        for (String text : getWrappedLines()) {
+        for (StringRenderable text : getWrappedLines()) {
 
             // cursor drawing
-            if (pos >= 0 && pos <= text.length()) {
+            if (pos >= 0 && pos <= text.getString().length()) {
                 // cursor is on this line
-                int c = fr.getStringWidth(text.substring(0, pos));
+                int c = fr.getWidth(text.getString().substring(0, pos));
                 boolean cursorBlink = this.cursorCounter / 6 % 3 != 0;
                 if (cursorBlink) {
-                    if (textField.getCursorPosition() < this.textField.getValue().length()) {
-                        vLine(loc.getXPos() + c + 3,
+                    if (textField.getCursor() < this.textField.getValue().length()) {
+                        drawVerticalLine(matrixStack, loc.getXPos() + c + 3,
                                 loc.getYPos() + line - 2,
-                                loc.getYPos() + line + fr.FONT_HEIGHT + 1, 0xffd0d0d0);
+                                loc.getYPos() + line + fr.fontHeight + 1, 0xffd0d0d0);
                     } else {
-                        fr.drawString("_", loc.getXPos() + c + 2, loc.getYPos() + line + 1, getPrimaryColorProperty().getHex());
+                        fr.draw(matrixStack, "_", loc.getXPos() + c + 2, loc.getYPos() + line + 1, getPrimaryColorProperty().getHex());
                     }
 
                 }
@@ -126,16 +131,16 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
             int w = -1;
 
             // test the start
-            if (start >= 0 && start <= text.length()) {
-                x = fr.getStringWidth(text.substring(0, start));
+            if (start >= 0 && start <= text.getString().length()) {
+                x = fr.getWidth(text.getString().substring(0, start));
             }
 
             // test the end
-            if (end >= 0 && end <= text.length()) {
-                w = fr.getStringWidth(text.substring(start < 0 ? 0 : start, end)) + 2;
+            if (end >= 0 && end <= text.getString().length()) {
+                w = fr.getWidth(text.getString().substring(start < 0 ? 0 : start, end)) + 2;
             }
 
-            final int LINE_Y = line + fr.FONT_HEIGHT + 2;
+            final int LINE_Y = line + fr.fontHeight + 2;
 
             if (w != 0) {
                 if (x >= 0 && w > 0) {
@@ -144,27 +149,27 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
                 } else {
                     if (x >= 0) {
                         // started on this line
-                        drawSelectionBox(x + 2, line, x + fr.getStringWidth(text.substring(start)) + 1, LINE_Y);
+                        drawSelectionBox(x + 2, line, x + fr.getWidth(text.getString().substring(start)) + 1, LINE_Y);
                     }
                     if (w >= 0) {
                         // ends on this line
                         drawSelectionBox(2, line, w, LINE_Y);
                     }
-                    if (start < 0 && end > text.length()) {
+                    if (start < 0 && end > text.getString().length()) {
                         // full line
-                        drawSelectionBox(1, line, fr.getStringWidth(text), LINE_Y);
+                        drawSelectionBox(1, line, fr.getWidth(text), LINE_Y);
                     }
                 }
             }
 
             // keep track of the lines
-            totalPos += text.length();
+            totalPos += text.getString().length();
             boolean space = getText().length() > totalPos && getText().charAt(totalPos) == ' ';
 
             // prepare all the markers for the next line.
-            pos -= text.length();
-            start -= text.length();
-            end -= text.length();
+            pos -= text.getString().length();
+            start -= text.getString().length();
+            end -= text.getString().length();
 
             if (space) {
                 // compensate for spaces
@@ -178,32 +183,32 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     }
 
-    private void drawText() {
+    private void drawText(MatrixStack matrixStack) {
         FancyFontRenderer ffr = new FancyFontRenderer(fr);
         ILocation loc = getLocation();
         int xPos = loc.getXPos() + 3;
         int yPos = loc.getYPos() + 1;
-        List<ITextComponent> lines = getFormattedLines();
-        for (ITextComponent line : lines) {
+        List<MutableText> lines = getFormattedLines();
+        for (MutableText line : lines) {
             Color color = Color.WHITE;
             xPos = loc.getXPos() + 3;
-            ffr.drawChat(line, xPos, yPos, color.getHex(), false);
-            yPos += fr.FONT_HEIGHT + 2;
-            xPos += fr.getStringWidth(line.getString());
+            ffr.drawChat(matrixStack, line, xPos, yPos, color.getHex(), false);
+            yPos += fr.fontHeight + 2;
+            xPos += fr.getWidth(line.getString());
         }
-        yPos -= fr.FONT_HEIGHT + 2;
+        yPos -= fr.fontHeight + 2;
 
-        boolean flag2 = textField.getTextField().getCursorPosition() < getText().length() || getText().length() >= textField.getTextField().getMaxStringLength();
+        boolean flag2 = textField.getTextField().getCursor() < getText().length() || getText().length() >= ((MixinTextFieldWidget)textField.getTextField()).invokeGetMaxLength();
 
         int x = loc.getXPos() + 3;
         if (!flag2 && suggestion != null) {
-            this.fr.drawStringWithShadow(this.suggestion, xPos, yPos, -8355712);
+            this.fr.drawWithShadow(matrixStack, this.suggestion, xPos, yPos, -8355712);
         }
 
     }
 
     /**
-     * Draws the blue selection box. Forwards to {@link TextFieldWidget#drawSelectionBox(int, int, int, int)}
+     * Draws the blue selection box. Forwards to {@link MixinTextFieldWidget#invokeDrawSelectionHighlight(int, int, int, int)}
      */
     private void drawSelectionBox(int x1, int y1, int x2, int y2) {
         ILocation loc = getLocation();
@@ -212,7 +217,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         y1 += loc.getYPos();
         y2 += loc.getYPos();
 
-        this.textField.getTextField().drawSelectionBox(x1, y1, x2, y2);
+        ((MixinTextFieldWidget)this.textField.getTextField()).invokeDrawSelectionHighlight(x1, y1, x2, y2);
 //        if (x1 < x2) {
 //            int i = x1;
 //            x1 = x2;
@@ -249,18 +254,18 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         this.cursorCounter++;
     }
 
-    public List<String> getWrappedLines() {
-        return fr.listFormattedStringToWidth(textField.getValue(), getLocation().getWidth());
+    public List<StringRenderable> getWrappedLines() {
+        return fr.wrapLines(textField.getMessage(), getLocation().getWidth());
     }
 
-    private List<ITextComponent> getFormattedLines() {
+    private List<MutableText> getFormattedLines() {
         spellcheck.checkSpelling(getText());
-        BiFunction<String, Integer, ITextComponent> formatter = textFormatter.andThen(new SpellingFormatter(spellcheck));
-        List<ITextComponent> lines = new ArrayList<>();
+        BiFunction<String, Integer, MutableText> formatter = textFormatter.andThen(new SpellingFormatter(spellcheck));
+        List<MutableText> lines = new ArrayList<>();
         int length = 0;
-        for (String line : getWrappedLines()) {
-            lines.add(formatter.apply(line, length));
-            length += line.length();
+        for (StringRenderable line : getWrappedLines()) {
+            lines.add(formatter.apply(line.getString(), length));
+            length += line.getString().length();
         }
         return lines;
     }
@@ -272,7 +277,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     @Override
     @Nonnull
     public Dim getMinimumSize() {
-        return new Dim(100, (fr.FONT_HEIGHT + 2) * getWrappedLines().size());
+        return new Dim(100, (fr.fontHeight + 2) * getWrappedLines().size());
     }
 
     public GuiText getTextField() {
@@ -302,22 +307,22 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
             ILocation bounds = this.getLocation();
 
             int width = bounds.getWidth() - 1;
-            int row = (int) y / (fr.FONT_HEIGHT + 2);
+            int row = (int) y / (fr.fontHeight + 2);
 
-            List<String> lines = getWrappedLines();
+            List<StringRenderable> lines = getWrappedLines();
             if (row < 0 || row >= lines.size() || x < 0 || x > width) {
                 return false;
             }
             int index = 0;
             for (int i = 0; i < row; i++) {
-                index += lines.get(i).length();
+                index += lines.get(i).getString().length();
                 // check for spaces because trailing spaces are trimmed
                 if (getText().charAt(index) == ' ') {
                     index++;
                 }
             }
-            index += fr.trimStringToWidth(lines.get(row), (int) x - 3).length();
-            textField.getTextField().setCursorPosition(index);
+            index += fr.trimToWidth(lines.get(row), (int) x - 3).getString().length();
+            textField.getTextField().setCursor(index);
             return true;
         }
         return false;
@@ -325,6 +330,6 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     @Override
     public boolean isVisible() {
-        return super.isVisible() && mc.ingameGUI.getChatGUI().getChatOpen();
+        return super.isVisible() && mc.inGameHud.getChatHud().isChatFocused();
     }
 }

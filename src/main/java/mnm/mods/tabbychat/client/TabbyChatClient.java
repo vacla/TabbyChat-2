@@ -12,13 +12,13 @@ import mnm.mods.tabbychat.client.settings.ServerSettings;
 import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IngameGui;
-import net.minecraft.client.gui.NewChatGui;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.resource.ReloadableResourceManager;
+import net.minecraft.text.Text;
+/*import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -27,8 +27,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;*/
 
+import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -46,7 +47,7 @@ public class TabbyChatClient {
         return instance;
     }
 
-    public TabbyChatClient(Path dataFolder) {
+    public TabbyChatClient(File dataFolder) {
         instance = this;
         // Set global settings
         settings = new TabbySettings(dataFolder);
@@ -66,13 +67,13 @@ public class TabbyChatClient {
     }
 
     public ServerSettings getServerSettings() {
-        Minecraft mc = Minecraft.getInstance();
-        ClientPlayNetHandler connection = mc.getConnection();
+        MinecraftClient mc = MinecraftClient.getInstance();
+        ClientPlayNetworkHandler connection = mc.getNetworkHandler();
         if (connection == null) {
             serverSettings = null;
         } else {
             // this is probably InetSocketAddress
-            SocketAddress address = connection.getNetworkManager().getRemoteAddress();
+            SocketAddress address = connection.getConnection().getAddress();
             if (serverSettings == null || !serverSettings.getSocket().equals(address)) {
 
                 // Set server settings
@@ -88,11 +89,11 @@ public class TabbyChatClient {
 
         TabbyChat.logger.info(TCMarkers.STARTUP, "Minecraft load complete!");
 
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        spellcheck = new Spellcheck(TabbyChat.dataFolder);        // Keeps the current language updated whenever it is changed.
-        IReloadableResourceManager irrm = (IReloadableResourceManager) mc.getResourceManager();
-        irrm.addReloadListener(spellcheck);
+        spellcheck = new Spellcheck(TabbyChat.dataFolder.toPath());        // Keeps the current language updated whenever it is changed.
+        ReloadableResourceManager irrm = (ReloadableResourceManager) mc.getResourceManager();
+        irrm.registerListener(spellcheck);
 
         chatManager = ChatManager.instance();
 
@@ -106,7 +107,7 @@ public class TabbyChatClient {
         if (settings.advanced.hideTag.get() && event.getChannel() != DefaultChannel.INSTANCE) {
             ChannelPatterns pattern = getServerSettings().general.channelPattern.get();
 
-            ITextComponent text = event.getText();
+            Text text = event.getText();
             Matcher matcher = pattern.getPattern().matcher(event.getText().getString());
             if (matcher.find()) {
                 event.setText(ChatTextUtils.subChat(text, matcher.end()));
@@ -134,8 +135,8 @@ public class TabbyChatClient {
         public static void onGuiOpen(TickEvent.ClientTickEvent event) {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
-            Minecraft mc = Minecraft.getInstance();
-            hookIntoChat(mc.ingameGUI, new GuiNewChatTC(mc, instance));
+            MinecraftClient mc = MinecraftClient.getInstance();
+            hookIntoChat(mc.inGameHud, new GuiNewChatTC(mc, instance));
             MinecraftForge.EVENT_BUS.unregister(StartListener.class);
         }
     }
@@ -152,7 +153,7 @@ public class TabbyChatClient {
         }
     }
 
-    private static void hookIntoChat(IngameGui guiIngame, NewChatGui chat) {
+    private static void hookIntoChat(InGameHud guiIngame, ChatHud chat) {
         try {
             ObfuscationReflectionHelper.setPrivateValue(IngameGui.class, guiIngame, chat, "field_73840_e");
 //            guiIngame.persistantChatGUI = chat;

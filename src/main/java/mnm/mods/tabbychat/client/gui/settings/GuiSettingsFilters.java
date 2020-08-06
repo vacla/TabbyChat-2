@@ -10,7 +10,7 @@ import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout;
 import mnm.mods.tabbychat.client.settings.ServerSettings;
 import mnm.mods.tabbychat.util.Color;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resource.language.I18n;
 
 import static mnm.mods.tabbychat.util.Translation.FILTERS;
 
@@ -26,7 +26,7 @@ public class GuiSettingsFilters extends SettingPanel<ServerSettings> {
 
     GuiSettingsFilters() {
         setLayout(new BorderLayout());
-        this.setDisplayString(I18n.format(FILTERS));
+        this.setDisplayString(I18n.translate(FILTERS));
         this.setSecondaryColor(Color.of(50, 200, 50, 64));
     }
 

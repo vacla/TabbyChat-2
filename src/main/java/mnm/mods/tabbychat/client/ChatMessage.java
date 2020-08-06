@@ -3,18 +3,18 @@ package mnm.mods.tabbychat.client;
 import java.time.LocalDateTime;
 
 import mnm.mods.tabbychat.api.Message;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
 
 public class ChatMessage implements Message {
 
-    private ITextComponent message;
+    private Text message;
     private int id;
     private transient int counter;
     private LocalDateTime instant;
 
     ChatMessage() {}
 
-    public ChatMessage(int updatedCounter, ITextComponent chat, int id, boolean isNew) {
+    public ChatMessage(int updatedCounter, Text chat, int id, boolean isNew) {
         // super(updatedCounter, chat, id);
         this.message = chat;
         this.id = id;
@@ -25,7 +25,7 @@ public class ChatMessage implements Message {
     }
 
     @Override
-    public ITextComponent getMessage() {
+    public Text getMessage() {
         return this.message;
     }
 

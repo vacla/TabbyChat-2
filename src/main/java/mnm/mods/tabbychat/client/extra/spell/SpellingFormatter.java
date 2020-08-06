@@ -3,16 +3,17 @@ package mnm.mods.tabbychat.client.extra.spell;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import com.swabunga.spell.event.SpellCheckEvent;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.text.ITextBuilder;
 import mnm.mods.tabbychat.util.text.TextBuilder;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
-public class SpellingFormatter implements Function<String, ITextComponent> {
+public class SpellingFormatter implements Function<String, MutableText> {
 
     private final Iterator<SpellCheckEvent> spelling;
 
@@ -24,11 +25,11 @@ public class SpellingFormatter implements Function<String, ITextComponent> {
     }
 
     @Override
-    public ITextComponent apply(String text) {
+    public MutableText apply(String text) {
         if (text == null)
             return null;
         if (text.contains("\u00a7") || !TabbyChatClient.getInstance().getSettings().advanced.spelling.get()) {
-            return new StringTextComponent(text);
+            return new LiteralText(text);
         }
 
         ITextBuilder b = new TextBuilder();

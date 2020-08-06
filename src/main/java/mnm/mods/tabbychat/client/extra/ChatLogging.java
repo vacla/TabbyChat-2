@@ -6,7 +6,7 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.util.IPUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
@@ -68,7 +68,7 @@ public class ChatLogging {
         if (shouldChangeLogFile()) {
             Calendar prev = date;
             date = cal;
-            server = Minecraft.getInstance().player.connection.getNetworkManager().getRemoteAddress();
+            server = MinecraftClient.getInstance().player.networkHandler.getConnection().getAddress();
             try {
                 Path old = logFile;
                 String server = getLogFolder();

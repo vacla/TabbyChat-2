@@ -1,10 +1,13 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.mixin.AbstractButtonWidgetInterface;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -21,7 +24,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
     private String hint;
 
     public GuiText() {
-        this(new TextFieldWidget(Minecraft.getInstance().fontRenderer, 0, 0, 1, 1, ""));
+        this(new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 1, 1, new LiteralText("")));
     }
 
     public GuiText(@Nonnull TextFieldWidget textField) {
@@ -29,7 +32,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
         // This text field must not be calibrated for someone of your...
         // generous..ness
         // I'll add a few 0s to the maximum length...
-        this.textField.setMaxStringLength(10000);
+        this.textField.setMaxLength(10000);
 
         // you look great, by the way.
 
@@ -42,7 +45,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
 
     @Nullable
     @Override
-    public IGuiEventListener delegate() {
+    public Element delegate() {
         return this.textField;
     }
 
@@ -56,7 +59,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
         this.textField.x = loc.getXPos();
         this.textField.y = loc.getYPos();
         this.textField.setWidth(loc.getWidth());
-        this.textField.setHeight(loc.getHeight());
+        ((AbstractButtonWidgetInterface)this.textField).setHeight(loc.getHeight());
     }
 
     @Override
@@ -65,19 +68,19 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        textField.render(mouseX, mouseY, parTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        textField.render(matrixStack, mouseX, mouseY, parTicks);
 
-        super.render(mouseX, mouseY, parTicks);
+        super.render(matrixStack, mouseX, mouseY, parTicks);
         if (textField.isFocused() && !StringUtils.isEmpty(getHint())) {
             // draw the hint above.
-            renderCaption(getHint(), 1, -5);
+            renderCaption(matrixStack, getHint(), 1, -5);
         }
     }
 
     @Override
     public void setPrimaryColor(Color foreColor) {
-        textField.setTextColor(foreColor.getHex());
+        textField.setEditableColor(foreColor.getHex());
         super.setPrimaryColor(foreColor);
     }
 

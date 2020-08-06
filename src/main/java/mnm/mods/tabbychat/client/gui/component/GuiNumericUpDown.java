@@ -5,8 +5,8 @@ import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.text.NumberFormat;
 import javax.annotation.Nonnull;
@@ -44,8 +44,8 @@ public abstract class GuiNumericUpDown<T extends Number> extends GuiPanel implem
             text.add(rect);
             GuiLabel label = new GuiLabel() {
                 @Override
-                public ITextComponent getText() {
-                    return new StringTextComponent(format.format(getValue()));
+                public Text getText() {
+                    return new LiteralText(format.format(getValue()));
                 }
             };
             text.add(label, new Location(5, 1, 0, 0));

@@ -1,8 +1,8 @@
 package mnm.mods.tabbychat.util.text;
 
 import com.google.common.collect.Lists;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ class TranslationBuilder extends AbstractChatBuilder {
     private final String translationKey;
     private List<Object> translationArgs = Lists.newArrayList();
 
-    private ITextComponent buffer;
+    private MutableText buffer;
 
     TranslationBuilder(ITextBuilder parent, String key) {
         this.parent = parent;
@@ -29,24 +29,24 @@ class TranslationBuilder extends AbstractChatBuilder {
 
     @Override
     public ITextBuilder end() {
-        ITextComponent buffer = append(null).buffer;
+        MutableText buffer = append(null).buffer;
         if (buffer != null)
             translationArgs.add(buffer);
-        return parent.append(new TranslationTextComponent(translationKey, translationArgs.toArray()));
+        return parent.append(new TranslatableText(translationKey, translationArgs.toArray()));
     }
 
     @Override
-    public ITextComponent build() {
+    public MutableText build() {
         throw new IllegalStateException("Translation in progress.");
     }
 
     @Override
-    public TranslationBuilder append(@Nullable ITextComponent chat) {
+    public TranslationBuilder append(@Nullable MutableText chat) {
         if (current != null) {
             if (this.buffer == null)
                 buffer = current;
             else
-                this.buffer.appendSibling(current);
+                this.buffer.append(current);
         }
         current = chat;
         return this;

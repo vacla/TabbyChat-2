@@ -6,6 +6,7 @@ import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
 import mnm.mods.tabbychat.client.gui.component.config.SettingPanel;
+import net.minecraft.client.util.math.MatrixStack;
 
 import javax.annotation.Nonnull;
 
@@ -31,7 +32,7 @@ public class SettingsButton extends GuiButton {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         if (active && displayX > 20) {
             displayX -= 2;
         } else if (!active && displayX < 30) {
@@ -44,9 +45,9 @@ public class SettingsButton extends GuiButton {
         int y2 = loc.getYHeight() - 1;
 
         GlStateManager.enableAlphaTest();
-        getSecondaryColor().ifPresent(color -> fill(x1, y1, x2, y2, color.getHex()));
-        String string = mc.fontRenderer.trimStringToWidth(getText(), loc.getWidth());
-        mc.fontRenderer.drawString(string, x1 + 10, loc.getYCenter() - 4, getPrimaryColorProperty().getHex());
+        getSecondaryColor().ifPresent(color -> fill(matrixStack, x1, y1, x2, y2, color.getHex()));
+        String string = mc.textRenderer.trimToWidth(getText(), loc.getWidth());
+        mc.textRenderer.draw(matrixStack, string, x1 + 10, loc.getYCenter() - 4, getPrimaryColorProperty().getHex());
     }
 
     @Nonnull

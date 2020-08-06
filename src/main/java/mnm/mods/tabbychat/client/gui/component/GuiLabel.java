@@ -3,8 +3,9 @@ package mnm.mods.tabbychat.client.gui.component;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.text.FancyFontRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 
 /**
  * Gui component label used to show text on the screen.
@@ -14,11 +15,11 @@ import net.minecraft.util.text.ITextComponent;
 public class GuiLabel extends GuiComponent {
 
     private FancyFontRenderer fr;
-    private ITextComponent text;
+    private MutableText text;
     private float angle;
 
     public GuiLabel() {
-        this.fr = new FancyFontRenderer(Minecraft.getInstance().fontRenderer);
+        this.fr = new FancyFontRenderer(MinecraftClient.getInstance().textRenderer);
     }
 
     /**
@@ -26,13 +27,13 @@ public class GuiLabel extends GuiComponent {
      *
      * @param chat The text
      */
-    public GuiLabel(ITextComponent chat) {
+    public GuiLabel(MutableText chat) {
         this();
         this.setText(chat);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         if (getText() == null)
             return;
         GlStateManager.pushMatrix();
@@ -45,7 +46,7 @@ public class GuiLabel extends GuiComponent {
         }
 
         ILocation loc = getLocation();
-        fr.drawChat(getText(), loc.getXPos() + 3, loc.getYPos() + 3, getPrimaryColorProperty().getHex(), true);
+        fr.drawChat(matrixStack, getText(), loc.getXPos() + 3, loc.getYPos() + 3, getPrimaryColorProperty().getHex(), true);
 
         GlStateManager.popMatrix();
     }
@@ -55,7 +56,7 @@ public class GuiLabel extends GuiComponent {
      *
      * @param text The string
      */
-    public void setText(ITextComponent text) {
+    public void setText(MutableText text) {
         this.text = text;
     }
 
@@ -64,7 +65,7 @@ public class GuiLabel extends GuiComponent {
      *
      * @return The string
      */
-    public ITextComponent getText() {
+    public MutableText getText() {
         return text;
     }
 

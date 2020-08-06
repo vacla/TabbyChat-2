@@ -6,7 +6,7 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.JsonParseException;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.util.EnumTypeAdapterFactory;
+import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -26,7 +26,7 @@ public abstract class SettingsFile extends ValueObject {
     private transient final Gson gson = new GsonBuilder()
             .registerTypeAdapter(getClass(), (InstanceCreator) type -> this)
             .setPrettyPrinting()
-            .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
+            .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
             .create();
 
     private transient final Path path;

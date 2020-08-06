@@ -13,21 +13,24 @@ import mnm.mods.tabbychat.client.UserChannel;
 import mnm.mods.tabbychat.client.settings.ServerSettings;
 import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.client.util.ScaledDimension;
+import mnm.mods.tabbychat.mixin.MixinChatScreenInterface;
+import mnm.mods.tabbychat.mixin.MixinCommandSuggestor;
+import mnm.mods.tabbychat.mixin.MixinScreen;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.util.Vec2i;
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.util.Rect2i;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ import java.util.function.Predicate;
 
 public class ChatBox extends GuiPanel {
 
-    public static final ResourceLocation GUI_LOCATION = new ResourceLocation(TabbyChat.MODID, "textures/chatbox.png");
+    public static final Identifier GUI_LOCATION = new Identifier(TabbyChat.MODID, "textures/chatbox.png");
 
     private static ChatBox instance;
 
@@ -75,8 +78,8 @@ public class ChatBox extends GuiPanel {
 
         super.tick();
 
-        MinecraftForge.EVENT_BUS.addListener(this::messageScroller);
-        MinecraftForge.EVENT_BUS.addListener(this::addChatMessage);
+        //MinecraftForge.EVENT_BUS.addListener(this::messageScroller);
+        //MinecraftForge.EVENT_BUS.addListener(this::addChatMessage);
     }
 
     public static ChatBox getInstance() {
@@ -85,8 +88,9 @@ public class ChatBox extends GuiPanel {
 
     public void update(ChatScreen chat) {
         this.chat = chat;
-        if (chat.suggestions != null && !(chat.suggestions.field_198505_b instanceof TCRect)) {
-            chat.suggestions.field_198505_b = new TCRect(chat.suggestions.field_198505_b);
+        if (((MixinCommandSuggestor)((MixinChatScreenInterface)chat).getCommandSuggestor()).getWindow() != null && ((MixinCommandSuggestor.MixinSuggestionWindow)((MixinCommandSuggestor)((MixinChatScreenInterface)chat).getCommandSuggestor()).getWindow()).getArea() instanceof TCRect)
+        {
+            ((MixinCommandSuggestor.MixinSuggestionWindow)((MixinCommandSuggestor)((MixinChatScreenInterface)chat).getCommandSuggestor()).getWindow()).setArea(new TCRect(((MixinCommandSuggestor.MixinSuggestionWindow)((MixinCommandSuggestor)((MixinChatScreenInterface)chat).getCommandSuggestor()).getWindow()).getArea()));
         }
     }
 
@@ -178,7 +182,7 @@ public class ChatBox extends GuiPanel {
         boolean hidden = channel.isPrefixHidden();
         int prefLength = hidden ? channel.getPrefix().length() + 1 : 0;
 
-        text.getTextField().getTextField().setMaxStringLength(ChatManager.MAX_CHAT_LENGTH - prefLength);
+        text.getTextField().getTextField().setMaxLength(ChatManager.MAX_CHAT_LENGTH - prefLength);
 
         // reset scroll
         // TODO per-channel scroll settings?
@@ -223,42 +227,22 @@ public class ChatBox extends GuiPanel {
             if (cmd.length() > ChatManager.MAX_CHAT_LENGTH) {
                 cmd = cmd.substring(0, ChatManager.MAX_CHAT_LENGTH);
             }
-            Minecraft.getInstance().player.sendChatMessage(cmd);
+            MinecraftClient.getInstance().player.sendChatMessage(cmd);
         }
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         handleDragging(mouseX, mouseY);
 
-        super.render(mouseX, mouseY, parTicks);
-        if (mc.ingameGUI.getChatGUI().getChatOpen() && chat != null) {
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            ILocation loc = getLocation();
-            final int height = fr.FONT_HEIGHT + 3;
-            final int xPos = chat.commandUsagePosition + loc.getXPos();
-            int yPos = loc.getYHeight() - chat.commandUsage.size() * height;
-            if (chat.suggestions != null) {
-                chat.suggestions.render(mouseX, mouseY);
-            } else if (xPos + chat.commandUsageWidth > loc.getXWidth()) {
-                int i = 0;
+        super.render(matrixStack, mouseX, mouseY, parTicks);
+        if (mc.inGameHud.getChatHud().isChatFocused()) {
+            update(chat);
+            ((MixinChatScreenInterface)chat).getCommandSuggestor().render(matrixStack, mouseX, mouseY);
 
-                for (String s : chat.commandUsage) {
-                    fill(0, chat.height - 14 - 12 * i, chat.commandUsageWidth + 1, chat.height - 2 - 12 * i, 0xff000000);
-                    fr.drawStringWithShadow(s, 1, chat.height - 14 + 2 - 12 * i, -1);
-                    ++i;
-                }
-            } else {
-                for (String s : chat.commandUsage) {
-                    fill(xPos - 1, yPos, xPos + chat.commandUsageWidth + 1, yPos - height, 0xd0000000);
-                    fr.drawStringWithShadow(s, xPos, yPos - height + 2, -1);
-                    yPos += height;
-                }
-            }
-
-            ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getTextComponent((double) mouseX, (double) mouseY);
-            if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
-                chat.renderComponentHoverEffect(itextcomponent, mouseX, mouseY);
+            Style itextcomponent = this.mc.inGameHud.getChatHud().getText(mouseX, mouseY);
+            if (itextcomponent != null && itextcomponent.getHoverEvent() != null) {
+                ((MixinScreen)chat).invokeRenderTextHoverEffect(matrixStack, itextcomponent, mouseX, mouseY);
             }
         }
     }
@@ -307,7 +291,7 @@ public class ChatBox extends GuiPanel {
     }
 
     private ILocation normalizeLocation(ILocation bounds) {
-        double scale = mc.gameSettings.chatScale;
+        double scale = mc.options.chatScale;
 
         // original dims
         final int x = (int) (bounds.getXPos() * scale);
@@ -321,8 +305,8 @@ public class ChatBox extends GuiPanel {
         int x1 = x;
         int y1 = y;
 
-        final int SCREEN_W = mc.mainWindow.getScaledWidth();
-        final int SCREEN_H = mc.mainWindow.getScaledHeight();
+        final int SCREEN_W = mc.getWindow().getScaledWidth();
+        final int SCREEN_H = mc.getWindow().getScaledHeight();
 
         final int HOTBAR = 25;
 
@@ -397,7 +381,7 @@ public class ChatBox extends GuiPanel {
 
     @Nullable
     @Override
-    public IGuiEventListener getFocused() {
+    public Element getFocused() {
         return txtChatInput;
     }
 
@@ -429,11 +413,12 @@ public class ChatBox extends GuiPanel {
         this.tick();
     }
 
-    private class TCRect extends Rectangle2d {
+    private class TCRect extends Rect2i
+    {
 
-        private final Rectangle2d parent;
+        private final Rect2i parent;
 
-        private TCRect(Rectangle2d parent) {
+        private TCRect(Rect2i parent) {
             super(0, 0, 0, 0);
             this.parent = parent;
         }

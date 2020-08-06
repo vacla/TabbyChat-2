@@ -11,8 +11,9 @@ import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.TexturedModal;
 import mnm.mods.tabbychat.client.gui.component.GuiButton;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 
 import javax.annotation.Nonnull;
 
@@ -58,26 +59,26 @@ public class ChatTab extends GuiButton {
     }
 
     private void openSettings() {
-        Minecraft.getInstance().displayGuiScreen(new GuiSettingsScreen(channel));
+        MinecraftClient.getInstance().openScreen(new GuiSettingsScreen(channel));
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         ChannelStatus status = chat.getStatus(channel);
-        if (mc.ingameGUI.getChatGUI().getChatOpen()
+        if (mc.inGameHud.getChatHud().isChatFocused()
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0 && TabbyChatClient.getInstance().getSettings().general.unreadFlashing.get())
                 || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == LocalVisibility.ALWAYS) {
             ILocation loc = getLocation();
             GlStateManager.enableBlend();
-            GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
+            GlStateManager.color4f(1, 1, 1, (float) mc.options.chatOpacity);
             drawModalCorners(getStatusModal(loc.contains(mouseX, mouseY)));
 
             int txtX = loc.getXCenter();
             int txtY = loc.getYCenter() - 2;
 
             Color primary = getPrimaryColorProperty();
-            int color = Color.getColor(primary.getRed(), primary.getGreen(), primary.getBlue(), (int) (mc.gameSettings.chatOpacity * 255));
-            this.drawCenteredString(mc.fontRenderer, this.getText(), txtX, txtY, color);
+            int color = Color.getColor(primary.getRed(), primary.getGreen(), primary.getBlue(), (int) (mc.options.chatOpacity * 255));
+            this.drawCenteredString(matrixStack, mc.textRenderer, this.getText(), txtX, txtY, color);
             GlStateManager.disableBlend();
         }
     }
@@ -119,6 +120,6 @@ public class ChatTab extends GuiButton {
     @Override
     public Dim getMinimumSize() {
         String chan = "<" + channel.getDisplayName() + ">";
-        return new Dim(mc.fontRenderer.getStringWidth(chan) + 8, 14);
+        return new Dim(mc.textRenderer.getWidth(chan) + 8, 14);
     }
 }

@@ -4,7 +4,10 @@ import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.command.TCTellCommand;
 import mnm.mods.tabbychat.net.SNetworkVersion;
 import mnm.mods.tabbychat.net.SSendChannelMessage;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +25,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
+import java.io.File;
 
 @Mod(TabbyChat.MODID)
 public class TabbyChat {
@@ -31,12 +34,12 @@ public class TabbyChat {
 
     public static final Logger logger = LogManager.getLogger(MODID);
 
-    public static final Path dataFolder = FMLPaths.CONFIGDIR.get().resolve(MODID);
+    public static final File dataFolder = new File(new File(MinecraftClient.getInstance().runDirectory, "config"),MODID);
 
     public static final String PROTOCOL_VERSION = "1";
 
-    private static SimpleChannel channel = initNetwork();
-    private static SimpleChannel versionChannel = initVersionNetwork();
+    private static Identifier channel = initNetwork();
+    private static Identifier versionChannel = initVersionNetwork();
 
     public TabbyChat() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -67,7 +70,7 @@ public class TabbyChat {
         logger.info(TCMarkers.NETWORK, "Initializing network");
 
         // put the version in the name so clients without that version will ignore any packets
-        ResourceLocation id = new ResourceLocation(MODID, "channel-v" + PROTOCOL_VERSION);
+        Identifier id = new Identifier(MODID, "channel-v" + PROTOCOL_VERSION);
         SimpleChannel channel = newChannel(id, PROTOCOL_VERSION);
 
         channel.messageBuilder(SSendChannelMessage.class, 0)
@@ -80,7 +83,7 @@ public class TabbyChat {
     }
 
     private static SimpleChannel initVersionNetwork() {
-        ResourceLocation id = new ResourceLocation(MODID, "version");
+        Identifier id = new Identifier(MODID, "version");
         SimpleChannel channel = newChannel(id, "1");
 
         channel.messageBuilder(SNetworkVersion.class, 0)
@@ -92,7 +95,7 @@ public class TabbyChat {
         return channel;
     }
 
-    private static SimpleChannel newChannel(ResourceLocation key, String version) {
+    private static SimpleChannel newChannel(Identifier key, String version) {
         return NetworkRegistry.ChannelBuilder
                 .named(key)
                 .networkProtocolVersion(() -> version)
@@ -102,8 +105,8 @@ public class TabbyChat {
                 .simpleChannel();
     }
 
-    public static void sendTo(ServerPlayerEntity player, String channel, ITextComponent text) {
-        TabbyChat.channel.sendTo(new SSendChannelMessage(channel, text), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendTo(ServerPlayerEntity player, String channel, Text text) {
+        TabbyChat.channel.sendTo(new SSendChannelMessage(channel, text), player.networkHandler.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
 }

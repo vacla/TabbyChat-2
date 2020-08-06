@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.client.util;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -20,9 +20,9 @@ public class ScaledDimension {
         this.scaledWidth = width;
         this.scaledHeight = height;
         this.scaleFactor = 1;
-        Minecraft mc = Minecraft.getInstance();
-        boolean unicode = mc.getForceUnicodeFont();
-        int scale = mc.gameSettings.guiScale;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        boolean unicode = mc.forcesUnicodeFont();
+        int scale = mc.options.guiScale;
 
         if (scale == 0) {
             scale = 1000;

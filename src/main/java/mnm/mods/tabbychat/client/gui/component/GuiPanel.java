@@ -3,8 +3,9 @@ package mnm.mods.tabbychat.client.gui.component;
 import com.google.common.collect.Lists;
 import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
 import mnm.mods.tabbychat.util.Dim;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.INestedGuiEventHandler;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,11 +17,12 @@ import javax.annotation.Nullable;
  *
  * @author Matthew
  */
-public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
+public class GuiPanel extends GuiComponent implements ParentElement
+{
 
     private List<GuiComponent> components = Lists.newArrayList();
     private ILayout layout;
-    private IGuiEventListener focused;
+    private Element focused;
 
     private boolean dragging;
 
@@ -32,21 +34,21 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         getLayout().ifPresent(layout -> layout.layoutComponents(this));
         this.components.stream()
                 .filter(GuiComponent::isVisible)
-                .forEach(gc -> gc.render(mouseX, mouseY, parTicks));
+                .forEach(gc -> gc.render(matrixStack, mouseX, mouseY, parTicks));
 
-        super.render(mouseX, mouseY, parTicks);
+        super.render(matrixStack, mouseX, mouseY, parTicks);
     }
 
     @Override
-    public void renderCaption(int mouseX, int mouseY) {
-        super.renderCaption(mouseX, mouseY);
+    public void renderCaption(MatrixStack matrixStack, int mouseX, int mouseY) {
+        super.renderCaption(matrixStack, mouseX, mouseY);
         this.children().stream()
                 .filter(GuiComponent::isVisible)
-                .forEach(gc -> gc.renderCaption(mouseX, mouseY));
+                .forEach(gc -> gc.renderCaption(matrixStack, mouseX, mouseY));
     }
 
     @Override
@@ -105,12 +107,12 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
 
     @Nullable
     @Override
-    public IGuiEventListener getFocused() {
+    public Element getFocused() {
         return focused;
     }
 
 
-    public void setFocused(IGuiEventListener focused) {
+    public void setFocused(Element focused) {
         this.focused = focused;
     }
 
@@ -144,17 +146,17 @@ public class GuiPanel extends GuiComponent implements INestedGuiEventHandler {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return INestedGuiEventHandler.super.mouseClicked(mouseX, mouseY, button);
+        return ParentElement.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double x, double y, int b) {
-        return INestedGuiEventHandler.super.mouseReleased(x, y, b);
+        return ParentElement.super.mouseReleased(x, y, b);
     }
 
     @Override
     public boolean mouseDragged(double x, double y, int b, double dx, double dy) {
-        return INestedGuiEventHandler.super.mouseDragged(x, y, b, dx, dy);
+        return ParentElement.super.mouseDragged(x, y, b, dx, dy);
     }
 
     @Override

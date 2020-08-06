@@ -17,6 +17,7 @@ import mnm.mods.tabbychat.client.gui.component.layout.FlowLayout;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
 import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.layout.ILayout;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -42,14 +43,14 @@ public class ChatTray extends GuiPanel {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        if (mc.inGameHud.getChatHud().isChatFocused()) {
             GlStateManager.enableBlend();
-            GlStateManager.color4f(1, 1, 1, (float) mc.gameSettings.chatOpacity);
+            GlStateManager.color4f(1, 1, 1, (float) mc.options.chatOpacity);
             drawModalCorners(MODAL);
             GlStateManager.disableBlend();
         }
-        super.render(mouseX, mouseY, parTicks);
+        super.render(matrixStack, mouseX, mouseY, parTicks);
     }
 
     @Override
@@ -101,13 +102,13 @@ public class ChatTray extends GuiPanel {
         }
 
         @Override
-        public void render(int mouseX, int mouseY, float parTicks) {
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
             GlStateManager.enableBlend();
             ILocation loc = getLocation();
-            int opac = (int) (mc.gameSettings.chatOpacity * 255) << 24;
-            renderBorders(loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
+            int opac = (int) (mc.options.chatOpacity * 255) << 24;
+            renderBorders(matrixStack, loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);
             if (value.get()) {
-                fill(loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
+                fill(matrixStack, loc.getXPos() + 3, loc.getYPos() + 3, loc.getXWidth() - 3, loc.getYHeight() - 3, 0xaaaaaa | opac);
             }
         }
 

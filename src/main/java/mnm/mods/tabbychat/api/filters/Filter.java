@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.api.filters;
 
-import net.minecraft.util.StringUtils;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
+import net.minecraft.util.ChatUtil;
 
 import java.util.regex.Pattern;
 
@@ -26,8 +26,8 @@ public interface Filter {
      * @param string The text component to be processed
      * @return The string which will be used for the
      */
-    default String prepareText(ITextComponent string) {
-        return StringUtils.stripControlCodes(string.getString());
+    default String prepareText(Text string) {
+        return ChatUtil.stripTextFormat(string.getString());
     }
 
 }

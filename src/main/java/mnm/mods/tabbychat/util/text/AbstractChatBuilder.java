@@ -1,38 +1,32 @@
 package mnm.mods.tabbychat.util.text;
 
 import mnm.mods.tabbychat.util.Color;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ScoreTextComponent;
-import net.minecraft.util.text.SelectorTextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
 
 public abstract class AbstractChatBuilder implements ITextBuilder {
 
-    protected ITextComponent current;
+    protected MutableText current;
 
     @Override
-    public ITextBuilder format(TextFormatting f) {
+    public ITextBuilder format(Formatting f) {
         checkCreated();
         if (f.isColor()) {
-            current.getStyle().setColor(f);
-        } else if (f.isFancyStyling()) {
-            if (f == TextFormatting.BOLD) {
-                current.getStyle().setBold(true);
-            } else if (f == TextFormatting.ITALIC) {
-                current.getStyle().setItalic(true);
-            } else if (f == TextFormatting.UNDERLINE) {
-                current.getStyle().setUnderlined(true);
-            } else if (f == TextFormatting.STRIKETHROUGH) {
-                current.getStyle().setStrikethrough(true);
-            } else if (f == TextFormatting.OBFUSCATED) {
-                current.getStyle().setObfuscated(true);
+            current.getStyle().withColor(f);
+        } else if (f.isModifier()) {
+            if (f == Formatting.BOLD) {
+                current.getStyle().withBold(true);
+            } else if (f == Formatting.ITALIC) {
+                current.getStyle().withItalic(true);
+            } else if (f == Formatting.UNDERLINE) {
+                current.getStyle().withFormatting(Formatting.UNDERLINE);
+            } else if (f == Formatting.STRIKETHROUGH) {
+                current.getStyle().withFormatting(Formatting.STRIKETHROUGH);
+            } else if (f == Formatting.OBFUSCATED) {
+                current.getStyle().withFormatting(Formatting.OBFUSCATED);
             }
-        } else if (f == TextFormatting.RESET) {
-            current.setStyle(new Style());
+        } else if (f == Formatting.RESET) {
+            current.getStyle().withParent(Style.EMPTY);
         }
         return this;
     }
@@ -65,7 +59,7 @@ public abstract class AbstractChatBuilder implements ITextBuilder {
     @Override
     public ITextBuilder click(ClickEvent event) {
         checkCreated();
-        current.getStyle().setClickEvent(event);
+        current.getStyle().withClickEvent(event);
         return this;
     }
 
@@ -79,7 +73,7 @@ public abstract class AbstractChatBuilder implements ITextBuilder {
     @Override
     public ITextBuilder insertion(String insertion) {
         checkCreated();
-        current.getStyle().setInsertion(insertion);
+        current.getStyle().withInsertion(insertion);
         return this;
     }
 
@@ -91,17 +85,17 @@ public abstract class AbstractChatBuilder implements ITextBuilder {
 
     @Override
     public ITextBuilder score(String player, String objective) {
-        return append(new ScoreTextComponent(player, objective));
+        return append(new ScoreText(player, objective));
     }
 
     @Override
     public ITextBuilder text(String text) {
-        return append(new StringTextComponent(text));
+        return append(new LiteralText(text));
     }
 
     @Override
     public ITextBuilder selector(Selector selector) {
-        return append(new SelectorTextComponent(selector.toString()));
+        return append(new SelectorText(selector.toString()));
     }
 
     @Override

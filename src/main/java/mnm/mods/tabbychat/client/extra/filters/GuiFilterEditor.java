@@ -10,13 +10,11 @@ import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.client.gui.component.layout.GuiGridLayout;
 import mnm.mods.tabbychat.util.Color;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -36,7 +34,7 @@ public class GuiFilterEditor extends GuiPanel {
         @Override
         public String getText() {
             String text = super.getText();
-            TextFormatting color = active ? TextFormatting.GREEN : TextFormatting.RED;
+            Formatting color = active ? Formatting.GREEN : Formatting.RED;
             return color + text;
         }
 
@@ -69,34 +67,34 @@ public class GuiFilterEditor extends GuiPanel {
 
         int pos = 0;
 
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_NAME)), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslatableText(FILTER_NAME)), new int[]{1, pos});
         this.add(txtName = new GuiText(), new int[]{5, pos, 10, 1});
         txtName.setValue(filter.getName());
 
         pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_DESTINATIONS)), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslatableText(FILTER_DESTINATIONS)), new int[]{1, pos});
         this.add(txtDestinations = new GuiText(), new int[]{8, pos, 10, 1});
         txtDestinations.setValue(Joiner.on(", ").join(settings.getChannels()));
-        txtDestinations.setCaption(new TranslationTextComponent(FILTER_DESTIONATIONS_DESC));
+        txtDestinations.setCaption(new TranslatableText(FILTER_DESTIONATIONS_DESC));
 
         pos += 1;
         this.add(btnRegexp = new ToggleButton(".*"), new int[]{1, pos, 2, 1});
         btnRegexp.active = filter.getSettings().isRegex();
-        btnRegexp.setCaption(new TranslationTextComponent(FILTER_REGEX));
+        btnRegexp.setCaption(new TranslatableText(FILTER_REGEX));
         this.add(btnIgnoreCase = new ToggleButton("Aa"), new int[]{3, pos, 2, 1});
         btnIgnoreCase.active = settings.isCaseInsensitive();
-        btnIgnoreCase.setCaption(new TranslationTextComponent(FILTER_IGNORE_CASE));
+        btnIgnoreCase.setCaption(new TranslatableText(FILTER_IGNORE_CASE));
         this.add(btnRaw = new ToggleButton("&0"), new int[]{5, pos, 2, 1});
         btnRaw.active = settings.isRaw();
-        btnRaw.setCaption(new TranslationTextComponent(FILTER_RAW_INPUT));
+        btnRaw.setCaption(new TranslatableText(FILTER_RAW_INPUT));
 
         pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_HIDE)), new int[]{2, pos});
+        this.add(new GuiLabel(new TranslatableText(FILTER_HIDE)), new int[]{2, pos});
         this.add(chkRemove = new GuiCheckbox(), new int[]{1, pos});
         chkRemove.setValue(settings.isRemove());
 
         pos += 1;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
+        this.add(new GuiLabel(new TranslatableText(FILTER_AUDIO_NOTIFY)), new int[]{2, pos});
         this.add(chkSound = new GuiCheckbox(), new int[]{1, pos});
         chkSound.setValue(settings.isSoundNotification());
 
@@ -114,8 +112,8 @@ public class GuiFilterEditor extends GuiPanel {
                 }
                 // suggest sounds
                 final String val = getValue().toLowerCase()
-                        .substring(0, getTextField().getCursorPosition());
-                List<String> list = GameRegistry.findRegistry(SoundEvent.class).getKeys().stream()
+                        .substring(0, getTextField().getCursor());
+                List<String> list = Registry.SOUND_EVENT.stream()
                         .map(Object::toString)
                         .filter(s -> s.contains(val))
                         .collect(Collectors.toList());
@@ -134,17 +132,17 @@ public class GuiFilterEditor extends GuiPanel {
             }
         }, new int[]{3, pos, 14, 1});
         txtSound.setValue(settings.getSoundName().orElse(""));
-        txtSound.getTextField().setValidator(txt -> ResourceLocation.tryCreate(txt) != null);
+        txtSound.getTextField().setTextPredicate(txt -> Identifier.tryParse(txt) != null);
 
         final GuiButton play = new GuiButton("\u25b6");
-        txtSound.getTextField().func_212954_a(s -> {
-            ResourceLocation res = ResourceLocation.tryCreate(s);
-            play.setSound(ForgeRegistries.SOUND_EVENTS.getValue(res));
+        txtSound.getTextField().setChangedListener(s -> {
+            Identifier res = Identifier.tryParse(s);
+            play.setSound(Registry.SOUND_EVENT.get(res));
         });
         this.add(play, new int[]{18, pos, 2, 1});
 
         pos += 2;
-        this.add(new GuiLabel(new TranslationTextComponent(FILTER_EXPRESSION)), new int[]{1, pos});
+        this.add(new GuiLabel(new TranslatableText(FILTER_EXPRESSION)), new int[]{1, pos});
         this.add(txtPattern = new GuiText() {
             @Override
             public boolean charTyped(char c, int key) {
@@ -158,7 +156,7 @@ public class GuiFilterEditor extends GuiPanel {
                     } catch (UserFilter.UserPatternException e) {
                         setPrimaryColor(Color.RED);
                         String string = e.getCause().getLocalizedMessage();
-                        lblError.setText(new TranslationTextComponent(string));
+                        lblError.setText(new TranslatableText(string));
                     }
                 }
                 return r;
@@ -170,7 +168,7 @@ public class GuiFilterEditor extends GuiPanel {
         pos++;
         this.add(lblError = new GuiLabel(), new int[]{4, pos});
 
-        GuiButton accept = new GuiButton(I18n.format("gui.done")) {
+        GuiButton accept = new GuiButton(I18n.translate("gui.done")) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 accept();

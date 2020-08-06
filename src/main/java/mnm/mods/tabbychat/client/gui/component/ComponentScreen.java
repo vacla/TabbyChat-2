@@ -1,10 +1,11 @@
 package mnm.mods.tabbychat.client.gui.component;
 
 import mnm.mods.tabbychat.util.Location;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -16,14 +17,14 @@ public class ComponentScreen extends Screen {
 
     private final GuiPanel PANEL = new GuiPanel();
 
-    public ComponentScreen(ITextComponent title) {
+    public ComponentScreen(Text title) {
         super(title);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float tick) {
-        PANEL.render(mouseX, mouseY, tick);
-        PANEL.renderCaption(mouseX, mouseY);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float tick) {
+        PANEL.render(matrixStack, mouseX, mouseY, tick);
+        PANEL.renderCaption(matrixStack, mouseX, mouseY);
     }
 
     @Override
@@ -33,12 +34,12 @@ public class ComponentScreen extends Screen {
 
     @Override
     @Nonnull
-    public List<? extends IGuiEventListener> children() {
+    public List<? extends Element> children() {
         return PANEL.children();
     }
 
     @Override
-    public void init(Minecraft mc, int width, int height) {
+    public void init(MinecraftClient mc, int width, int height) {
         PANEL.setLocation(new Location(0, 0, width, height));
         PANEL.clear();
         super.init(mc, width, height);

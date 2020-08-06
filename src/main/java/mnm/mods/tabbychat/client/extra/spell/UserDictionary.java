@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
 
 /**
  * Dictionary that supports {@code #} comments

@@ -3,7 +3,9 @@ package mnm.mods.tabbychat.client.gui.component;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 /**
@@ -22,16 +24,16 @@ public class GuiCheckbox extends GuiButton implements IGuiInput<Boolean> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        Minecraft mc = Minecraft.getInstance();
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        MinecraftClient mc = MinecraftClient.getInstance();
 
         ILocation loc = getLocation();
-        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.getXPos(), loc.getYPos(), 0, 46, loc.getWidth(), loc.getHeight(), 200, 20, 2, 3, 2, 2, this.blitOffset);
+        GuiUtils.drawContinuousTexturedBox(WIDGETS, loc.getXPos(), loc.getYPos(), 0, 46, loc.getWidth(), loc.getHeight(), 200, 20, 2, 3, 2, 2, this.getZOffset());
 
         if (this.getValue()) {
-            this.drawCenteredString(mc.fontRenderer, "x", loc.getXCenter() + 1, loc.getYPos() + 1, getSecondaryColorProperty().getHex());
+            this.drawCenteredString(matrixStack, mc.textRenderer, "x", loc.getXCenter() + 1, loc.getYPos() + 1, getSecondaryColorProperty().getHex());
         }
-        this.drawString(mc.fontRenderer, getText(), loc.getXWidth() + 2, loc.getYPos() + 2, getPrimaryColorProperty().getHex());
+        this.drawTextWithShadow(matrixStack, mc.textRenderer, new LiteralText(getText()), loc.getXWidth() + 2, loc.getYPos() + 2, getPrimaryColorProperty().getHex());
     }
 
     @Override

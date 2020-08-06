@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.util;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 /**
  * Defines a modal with a resource location, u and v values, a width and a
@@ -8,13 +8,13 @@ import net.minecraft.util.ResourceLocation;
  */
 public class TexturedModal {
 
-    private final ResourceLocation resource;
+    private final Identifier resource;
     private final int xPos;
     private final int yPos;
     private final int width;
     private final int height;
 
-    public TexturedModal(ResourceLocation resource, int xPos, int yPos, int width, int height) {
+    public TexturedModal(Identifier resource, int xPos, int yPos, int width, int height) {
         this.resource = resource;
         this.xPos = xPos;
         this.yPos = yPos;
@@ -22,7 +22,7 @@ public class TexturedModal {
         this.height = height;
     }
 
-    public ResourceLocation getResourceLocation() {
+    public Identifier getResourceLocation() {
         return resource;
     }
 

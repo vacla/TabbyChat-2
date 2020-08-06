@@ -1,7 +1,6 @@
 package mnm.mods.tabbychat.api;
 
-import com.mojang.authlib.GameProfile;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
 
 import java.util.List;
 import java.util.Set;
@@ -39,16 +38,16 @@ public interface Chat {
 
     List<? extends Message> getMessages(Channel channel);
 
-    void addMessage(Channel channel, ITextComponent message);
+    void addMessage(Channel channel, Text message);
 
-    default void addMessage(Set<? extends Channel> channels, ITextComponent message) {
+    default void addMessage(Set<? extends Channel> channels, Text message) {
         for (Channel chan : channels) {
             addMessage(chan, message);
         }
     }
 
-    default void addMessages(Channel channel, Iterable<ITextComponent> messages) {
-        for (ITextComponent msg : messages) {
+    default void addMessages(Channel channel, Iterable<Text> messages) {
+        for (Text msg : messages) {
             addMessage(channel, msg);
         }
     }
@@ -58,7 +57,7 @@ public interface Chat {
      *
      * @param message
      */
-    default void broadcast(ITextComponent message) {
+    default void broadcast(Text message) {
         addMessage(getChannels(), message);
     }
 }

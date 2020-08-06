@@ -1,50 +1,59 @@
 package mnm.mods.tabbychat.util.text;
 
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 
-public class FancyFontRenderer extends AbstractGui {
+import java.util.Optional;
 
-    private final FontRenderer fontRenderer;
+public class FancyFontRenderer extends DrawableHelper
+{
 
-    public FancyFontRenderer(FontRenderer fr) {
+    private final TextRenderer fontRenderer;
+
+    public FancyFontRenderer(TextRenderer fr) {
         this.fontRenderer = fr;
     }
 
-    public void drawChat(ITextComponent chat, float x, float y) {
-        this.drawChat(chat, x, y, true);
+    public void drawChat(MatrixStack matrixStack, MutableText chat, float x, float y) {
+        this.drawChat(matrixStack, chat, x, y, true);
     }
 
-    public void drawChat(ITextComponent chat, float x, float y, boolean shadow) {
-        drawChat(chat, x, y, -1, shadow);
+    public void drawChat(MatrixStack matrixStack, MutableText chat, float x, float y, boolean shadow) {
+        drawChat(matrixStack, chat, x, y, -1, shadow);
     }
 
-    public void drawChat(ITextComponent chat, float x, float y, int color) {
-        this.drawChat(chat, x, y, color, true);
+    public void drawChat(MatrixStack matrixStack, MutableText chat, float x, float y, int color) {
+        this.drawChat(matrixStack, chat, x, y, color, true);
     }
 
-    public void drawChat(ITextComponent chat, float x, float y, int color, boolean shadow) {
+    public void drawChat(MatrixStack matrixStack, MutableText chat, float x, float y, int color, boolean shadow) {
 
-        float x1 = x;
-        for (ITextComponent c : chat) {
-            if (c instanceof FancyTextComponent) {
-                FancyTextComponent fcc = (FancyTextComponent) c;
-                for (String s : c.getString().split("\r?\n")) {
-                    int length = fontRenderer.getStringWidth(s);
-                    fill((int) x1, (int) y, (int) x1 + length, (int) y - fontRenderer.FONT_HEIGHT, fcc.getFancyStyle().getHighlight().getHex());
-                    hLine((int) x1, (int) x1 + length, (int) y + fontRenderer.FONT_HEIGHT - 1, fcc.getFancyStyle().getUnderline().getHex());
+        final float[] x1 = {x};
+        float finalY = y;
+        chat.visit((style, text) -> {
+            MutableText message = new LiteralText(text).setStyle(style);
+            if (message instanceof FancyTextComponent) {
+                FancyTextComponent fcc = (FancyTextComponent) message;
+                for (String s : text.split("\r?\n")) {
+                    int length = fontRenderer.getWidth(s);
+                    fill(matrixStack, (int) x1[0], (int) finalY, (int) x1[0] + length, (int) finalY - fontRenderer.fontHeight, fcc.getFancyStyle().getHighlight().getHex());
+                    drawHorizontalLine(matrixStack, (int) x1[0], (int) x1[0] + length, (int) finalY + fontRenderer.fontHeight - 1, fcc.getFancyStyle().getUnderline().getHex());
                 }
             }
-            x1 += fontRenderer.getStringWidth(c.getUnformattedComponentText());
-        }
+            x1[0] += fontRenderer.getWidth(text);
+            return Optional.empty();
+        }, Style.EMPTY);
         for (String s : chat.getString().split("\r?\n")) {
             if (shadow) {
-                fontRenderer.drawStringWithShadow(s, x, y, color);
+                fontRenderer.drawWithShadow(matrixStack, s, x, y, color);
             }else {
-                fontRenderer.drawString(s, x, y, color);
+                fontRenderer.draw(matrixStack, s, x, y, color);
             }
-            y += fontRenderer.FONT_HEIGHT;
+            y += fontRenderer.fontHeight;
         }
     }
 

@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui;
 
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class Scrollbar extends GuiComponent {
 
@@ -12,11 +13,11 @@ public class Scrollbar extends GuiComponent {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        if (mc.ingameGUI.getChatGUI().getChatOpen()) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        if (mc.inGameHud.getChatHud().isChatFocused()) {
             int scroll = chat.getScrollPos();
             int max = chat.getLocation().getHeight();
-            int lines = max / mc.fontRenderer.FONT_HEIGHT;
+            int lines = max / mc.textRenderer.fontHeight;
             int total = chat.getChat().size();
             if (total <= lines) {
                 return;
@@ -27,8 +28,8 @@ public class Scrollbar extends GuiComponent {
             int pos = (int) (perc * max);
 
             ILocation loc = getLocation();
-            fill(loc.getXPos(), loc.getYPos() + pos, loc.getXPos() + 1, loc.getYPos() + pos + size, -1);
-            super.render(mouseX, mouseY, parTicks);
+            fill(matrixStack, loc.getXPos(), loc.getYPos() + pos, loc.getXPos() + 1, loc.getYPos() + pos + size, -1);
+            super.render(matrixStack, mouseX, mouseY, parTicks);
         }
     }
 

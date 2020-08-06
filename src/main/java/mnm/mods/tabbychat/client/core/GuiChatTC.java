@@ -4,8 +4,9 @@ import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.gui.ChatBox;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
+import mnm.mods.tabbychat.mixin.MixinChatScreenInterface;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -29,26 +30,26 @@ public class GuiChatTC {
         if (event.getGui() instanceof ChatScreen) {
             ChatScreen guichat = (ChatScreen) event.getGui();
             AbstractChannel chan = chat.getActiveChannel();
-            if (guichat.defaultInputFieldText.isEmpty()
+            if (((MixinChatScreenInterface)guichat).getChatFieldText().isEmpty()
                     && !chan.isPrefixHidden()
                     && !chan.getPrefix().isEmpty()) {
-                guichat.defaultInputFieldText = chan.getPrefix() + " ";
+                ((MixinChatScreenInterface)guichat).setChatFieldText(chan.getPrefix() + " ");
             }
             GuiText text = chat.getChatInput().getTextField();
-            guichat.inputField = text.getTextField();
-            text.setValue(guichat.defaultInputFieldText);
+            ((MixinChatScreenInterface) guichat).setChatField(text.getTextField());
+            text.setValue(((MixinChatScreenInterface) guichat).getChatFieldText());
 
-            chat.getChatInput().setTextFormatter(guichat::formatMessage);
-            text.getTextField().func_212954_a(guichat::func_212997_a);
+            //chat.getChatInput().setTextFormatter(MixinCommandSuggestor.invokeGetLastPlayerNameStart);
+            text.getTextField().setChangedListener(((MixinChatScreenInterface) guichat)::invokeOnChatFieldUpdate);
 
-            List<IGuiEventListener> children = (List<IGuiEventListener>) guichat.children();
+            List<Element> children = (List<Element>) guichat.children();
             children.set(0, chat);
         }
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getInstance().currentScreen instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
+        if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
             chat.tick();
         }
     }
@@ -128,13 +129,13 @@ public class GuiChatTC {
 
     private boolean keyPressed(ChatScreen guichat, int key) {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            Minecraft.getInstance().ingameGUI.getChatGUI().resetScroll();
+            MinecraftClient.getInstance().inGameHud.getChatHud().resetScroll();
             GuiText text = this.chat.getChatInput().getTextField();
             guichat.sendMessage(text.getValue());
-            text.setValue(guichat.defaultInputFieldText);
+            text.setValue(((MixinChatScreenInterface)guichat).getChatFieldText());
 
             if (!TabbyChatClient.getInstance().getSettings().advanced.keepChatOpen.get()) {
-                Minecraft.getInstance().displayGuiScreen(null);
+                MinecraftClient.getInstance().openScreen(null);
             }
             return true;
         }

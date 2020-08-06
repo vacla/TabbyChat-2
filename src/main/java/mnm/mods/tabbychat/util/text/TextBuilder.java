@@ -1,12 +1,12 @@
 package mnm.mods.tabbychat.util.text;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.MutableText;
 
 import javax.annotation.Nullable;
 
 public class TextBuilder extends AbstractChatBuilder {
 
-    private ITextComponent chat;
+    private MutableText chat;
 
     /**
      * Used for builders that build multiple chats.
@@ -36,13 +36,13 @@ public class TextBuilder extends AbstractChatBuilder {
      * @return
      */
     @Override
-    public TextBuilder append(@Nullable ITextComponent chat) {
+    public TextBuilder append(@Nullable MutableText chat) {
 
         if (current != null) {
             if (this.chat == null)
                 this.chat = current;
             else
-                this.chat.appendSibling(current);
+                this.chat.append(current);
         }
         current = chat;
         return this;
@@ -54,7 +54,7 @@ public class TextBuilder extends AbstractChatBuilder {
      * @return The chat
      */
     @Override
-    public ITextComponent build() {
+    public MutableText build() {
         return append(null).chat;
     }
 }

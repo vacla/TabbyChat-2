@@ -10,8 +10,7 @@ import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.client.settings.ServerSettings;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.List;
 import java.util.Map;
@@ -32,11 +31,11 @@ public class FilterAddon {
 
         variables.clear();
 
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
         setVariable("player", () -> Pattern.quote(mc.getSession().getUsername()));
         setVariable("onlineplayer", () -> Joiner.on('|')
-                .appendTo(new StringBuilder("(?:"), mc.getConnection().getPlayerInfoMap().stream()
-                        .map(player -> Pattern.quote(player.getGameProfile().getName()))
+                .appendTo(new StringBuilder("(?:"), mc.getNetworkHandler().getPlayerList().stream()
+                        .map(player -> Pattern.quote(player.getProfile().getName()))
                         .iterator())
                 .append(')').toString()
         );

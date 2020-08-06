@@ -4,11 +4,11 @@ import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.filters.Filter;
 import mnm.mods.tabbychat.api.filters.FilterEvent;
 import mnm.mods.tabbychat.api.filters.FilterSettings;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,17 +110,17 @@ public class UserFilter implements Filter {
         // play sound
         if (settings.isSoundNotification()) {
             settings.getSoundName()
-                    .map(ResourceLocation::new)
-                    .map(ForgeRegistries.SOUND_EVENTS::getValue)
-                    .map(sndEvent -> SimpleSound.master(sndEvent, 1.0F))
-                    .ifPresent(Minecraft.getInstance().getSoundHandler()::play);
+                    .map(Identifier::new)
+                    .map(Registry.SOUND_EVENT::getOrEmpty)
+                    .map(sndEvent -> PositionedSoundInstance.master(sndEvent.get(), 1.0F))
+                    .ifPresent(MinecraftClient.getInstance().getSoundManager()::play);
 
         }
     }
 
     @Override
-    public String prepareText(ITextComponent string) {
-        return settings.isRaw() ? string.getFormattedText() : Filter.super.prepareText(string);
+    public String prepareText(Text string) {
+        return settings.isRaw() ? string.getString() : Filter.super.prepareText(string);
     }
 
     public void setName(String name) {

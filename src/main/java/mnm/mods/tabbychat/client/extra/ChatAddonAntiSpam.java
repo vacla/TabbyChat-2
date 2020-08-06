@@ -34,7 +34,7 @@ public class ChatAddonAntiSpam {
 
             if (getDifference(chat, counter.lastMessage) <= prejudice) {
                 counter.spamCounter++;
-                event.getText().appendText(" [" + counter.spamCounter + "x]");
+                event.getText().append(" [" + counter.spamCounter + "x]");
                 chatManager.removeMessageAt(channel, 0);
                 chatManager.markDirty(channel);
             } else {

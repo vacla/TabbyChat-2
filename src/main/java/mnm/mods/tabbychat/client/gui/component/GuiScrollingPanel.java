@@ -5,6 +5,7 @@ import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.client.gui.component.layout.BorderLayout.Position;
+import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -29,19 +30,19 @@ public class GuiScrollingPanel extends GuiPanel {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
 
         ILocation rect = getLocation();
         this.panel.setLocation(this.panel.getLocation().copy().setXPos(rect.getXPos()));
 
-        double height = mc.mainWindow.getHeight();
-        double scale = mc.mainWindow.getGuiScaleFactor();
+        double height = mc.getWindow().getHeight();
+        double scale = mc.getWindow().getScaleFactor();
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor((int) ((rect.getXPos()) * scale), (int) (height - rect.getYHeight() * scale),
                 (int) (rect.getWidth() * scale + 1), (int) (rect.getHeight() * scale + 1));
 
-        super.render(mouseX, mouseY, parTicks);
+        super.render(matrixStack, mouseX, mouseY, parTicks);
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
@@ -81,7 +82,7 @@ public class GuiScrollingPanel extends GuiPanel {
     private class Scrollbar extends GuiComponent {
 
         @Override
-        public void render(int mouseX, int mouseY, float parTicks) {
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
             ILocation loc = GuiScrollingPanel.this.getLocation();
             int scroll = panel.getLocation().getYPos();
             int min = loc.getYPos();
@@ -91,13 +92,13 @@ public class GuiScrollingPanel extends GuiPanel {
                 return;
             }
             total -= max;
-            fill(0, 20, 10, 10, -1);
+            fill(matrixStack, 0, 20, 10, 10, -1);
             int size = Math.max(max / 2, 10);
             float perc = ((float) scroll / (float) total) * ((float) size / (float) max);
             int pos = (int) (-perc * max);
 
-            fill(loc.getXPos() - 1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
-            super.render(mouseX, mouseY, parTicks);
+            fill(matrixStack, loc.getXPos() - 1, loc.getYPos() + pos, loc.getXPos(), loc.getYPos() + pos + size - 1, -1);
+            super.render(matrixStack, mouseX, mouseY, parTicks);
         }
     }
 }

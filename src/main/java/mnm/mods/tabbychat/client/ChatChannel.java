@@ -1,7 +1,5 @@
 package mnm.mods.tabbychat.client;
 
-import java.util.Objects;
-
 public class ChatChannel extends AbstractChannel {
 
     private final String name;

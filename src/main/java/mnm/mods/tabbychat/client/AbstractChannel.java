@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.client;
 
 import com.google.common.base.Strings;
 import mnm.mods.tabbychat.api.Channel;
-import net.minecraft.util.StringUtils;
+import net.minecraft.util.ChatUtil;
 
 public abstract class AbstractChannel implements Channel {
 
@@ -50,7 +50,7 @@ public abstract class AbstractChannel implements Channel {
      * @param prefix The new prefix
      */
     public void setPrefix(String prefix) {
-        this.prefix = StringUtils.stripControlCodes(prefix);
+        this.prefix = ChatUtil.stripTextFormat(prefix);
     }
 
     /**

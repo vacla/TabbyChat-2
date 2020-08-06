@@ -1,10 +1,10 @@
 package mnm.mods.tabbychat.util.text;
 
 import mnm.mods.tabbychat.util.Color;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.util.Formatting;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public interface ITextBuilder {
      * @param f The format
      * @return This builder
      */
-    ITextBuilder format(TextFormatting f);
+    ITextBuilder format(Formatting f);
 
     ITextBuilder color(Color color);
 
@@ -38,7 +38,7 @@ public interface ITextBuilder {
 
     /**
      * Starts the creation of a translation. After calling, any call to
-     * {@link #append(ITextComponent)} won't be immediately appended to the
+     * {@link #append(net.minecraft.text.MutableText)} won't be immediately appended to the
      * component. Instead, it will be added to a list of arguments for the
      * translation. To end the translation and allow it to be appended to the
      * chat, call {@link #end()}.
@@ -79,13 +79,13 @@ public interface ITextBuilder {
      * @param chat The new current value
      * @return
      */
-    ITextBuilder append(@Nullable ITextComponent chat);
+    ITextBuilder append(@Nullable MutableText chat);
 
     /**
      * Appends the current chat (if any) to the chat and returns the built chat.
      *
      * @return The chat
      */
-    ITextComponent build();
+    MutableText build();
 
 }

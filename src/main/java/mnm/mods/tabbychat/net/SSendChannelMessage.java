@@ -4,7 +4,8 @@ import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.client.ChatManager;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.Marker;
@@ -16,21 +17,21 @@ import java.util.function.Supplier;
 public class SSendChannelMessage {
 
     private String channel;
-    private ITextComponent message;
+    private Text message;
 
-    public SSendChannelMessage(PacketBuffer buffer) {
+    public SSendChannelMessage(PacketByteBuf buffer) {
         channel = buffer.readString(20);
-        message = buffer.readTextComponent();
+        message = buffer.readText();
     }
 
-    public SSendChannelMessage(String channel, ITextComponent message) {
+    public SSendChannelMessage(String channel, Text message) {
         this.channel = channel;
         this.message = message;
     }
 
-    public void encode(PacketBuffer buffer) {
+    public void encode(PacketByteBuf buffer) {
         buffer.writeString(channel);
-        buffer.writeTextComponent(message);
+        buffer.writeText(message);
     }
 
     public void handle(Supplier<NetworkEvent.Context> context) {

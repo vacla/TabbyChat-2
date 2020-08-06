@@ -3,8 +3,9 @@ package mnm.mods.tabbychat.client.gui.component;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -24,13 +25,13 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
 
     @Nullable
     @Override
-    public IGuiEventListener delegate() {
+    public Element delegate() {
         return wrapper;
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
-        wrapper.render(mouseX, mouseY, parTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        wrapper.render(matrixStack, mouseX, mouseY, parTicks);
     }
 
     @Override
@@ -109,12 +110,12 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
     }
 
     @Override
-    public void setCaption(ITextComponent text) {
+    public void setCaption(Text text) {
         wrapper.setCaption(text);
     }
 
     @Override
-    public Optional<ITextComponent> getCaption() {
+    public Optional<Text> getCaption() {
         return wrapper.getCaption();
     }
 

@@ -7,11 +7,12 @@ import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import mnm.mods.tabbychat.util.TexturedModal;
 import mnm.mods.tabbychat.util.Vec2i;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Nullable;
@@ -24,19 +25,20 @@ import java.util.function.Predicate;
  *
  * @author Matthew
  */
-public abstract class GuiComponent extends Widget {
+public abstract class GuiComponent extends AbstractButtonWidget
+{
 
-    protected Minecraft mc = Minecraft.getInstance();
+    protected MinecraftClient mc = MinecraftClient.getInstance();
 
     private Color secondaryColor;
     private Color primaryColor;
     private GuiPanel parent;
     private ILocation location = new Location();
     private Dim minimumSize = new Dim(0, 0);
-    private ITextComponent caption;
+    private Text caption;
 
     public GuiComponent() {
-        super(0, 0, "");
+        super(0, 0, 200, 20, new LiteralText(""));
     }
 
     /**
@@ -47,30 +49,30 @@ public abstract class GuiComponent extends Widget {
      * @param parTicks
      */
     @Override
-    public void renderButton(int mouseX, int mouseY, float parTicks) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
     }
 
-    public void renderCaption(int x, int y) {
+    public void renderCaption(MatrixStack matrixStack, int x, int y) {
         getCaption()
-                .map(ITextComponent::getFormattedText)
+                .map(Text::getString)
                 .filter(((Predicate<String>) String::isEmpty).negate())
                 .filter(t -> this.getLocation().contains(x, y))
-                .ifPresent(text -> this.renderCaption(text, x, y));
+                .ifPresent(text -> this.renderCaption(matrixStack, text, x, y));
     }
 
-    protected void renderCaption(String caption, int x, int y) {
+    protected void renderCaption(MatrixStack matrixStack, String caption, int x, int y) {
         caption = StringEscapeUtils.unescapeJava(caption);
         String[] list = caption.split("\n\r?");
 
         int w = 0;
         // find the largest width
         for (String s : list) {
-            w = Math.max(w, (int) (mc.fontRenderer.getStringWidth(s)));
+            w = Math.max(w, (int) (mc.textRenderer.getWidth(s)));
         }
-        y -= mc.fontRenderer.FONT_HEIGHT * list.length;
+        y -= mc.textRenderer.fontHeight * list.length;
 
         Vec2i point = getLocation().getPoint();
-        int sw = mc.mainWindow.getScaledWidth();
+        int sw = mc.getWindow().getScaledWidth();
         int w2 = w;
         int x2 = x;
         while (x2 - 8 + point.x + w2 + 20 > sw) {
@@ -81,21 +83,21 @@ public abstract class GuiComponent extends Widget {
         y += getLocation().getYPos();
         // put it on top
         GlStateManager.pushMatrix();
-        fill(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1, 0xcc333333);
-        renderBorders(x - 2, y - 2, x + w + 2, y + mc.fontRenderer.FONT_HEIGHT * list.length + 1,
+        fill(matrixStack, x - 2, y - 2, x + w + 2, y + mc.textRenderer.fontHeight * list.length + 1, 0xcc333333);
+        renderBorders(matrixStack, x - 2, y - 2, x + w + 2, y + mc.textRenderer.fontHeight * list.length + 1,
                 0xccaaaaaa);
         for (String s : list) {
-            mc.fontRenderer.drawStringWithShadow(s, x, y, this.getPrimaryColorProperty().getHex());
-            y += mc.fontRenderer.FONT_HEIGHT;
+            mc.textRenderer.drawWithShadow(matrixStack, s, x, y, this.getPrimaryColorProperty().getHex());
+            y += mc.textRenderer.fontHeight;
         }
         GlStateManager.popMatrix();
     }
 
-    protected void renderBorders(int x1, int y1, int x2, int y2, int color) {
-        this.vLine(x1 - 1, y1 - 1, y2 + 1, color); // left
-        this.hLine(x1 - 1, x2, y1 - 1, color); // top
-        this.vLine(x2, y1 - 1, y2 + 1, color); // right
-        this.hLine(x1, x2 - 1, y2, color); // bottom
+    protected void renderBorders(MatrixStack matrixStack, int x1, int y1, int x2, int y2, int color) {
+        this.drawVerticalLine(matrixStack, x1 - 1, y1 - 1, y2 + 1, color); // left
+        this.drawHorizontalLine(matrixStack, x1 - 1, x2, y1 - 1, color); // top
+        this.drawVerticalLine(matrixStack, x2, y1 - 1, y2 + 1, color); // right
+        this.drawHorizontalLine(matrixStack, x1, x2 - 1, y2, color); // bottom
     }
 
     /**
@@ -107,7 +109,7 @@ public abstract class GuiComponent extends Widget {
      * @param x2 right point
      * @param y2 lower point
      */
-    protected void renderBorders(int x1, int y1, int x2, int y2) {
+    protected void renderBorders(MatrixStack matrixStack, int x1, int y1, int x2, int y2) {
         Color color = getSecondaryColorProperty();
         int r = color.getRed();
         int g = color.getGreen();
@@ -117,7 +119,7 @@ public abstract class GuiComponent extends Widget {
         g += lum(g, amt);
         b += lum(b, amt);
         color = Color.of(r, g, b, 0xaa);
-        renderBorders(x1, y1, x2, y2, color.getHex());
+        renderBorders(matrixStack, x1, y1, x2, y2, color.getHex());
     }
 
     private static int lum(int o, double amt) {
@@ -264,7 +266,7 @@ public abstract class GuiComponent extends Widget {
         this.visible = visible;
     }
 
-    public void setCaption(@Nullable ITextComponent text) {
+    public void setCaption(@Nullable Text text) {
         this.caption = text;
     }
 
@@ -274,7 +276,7 @@ public abstract class GuiComponent extends Widget {
      *
      * @return The caption
      */
-    public Optional<ITextComponent> getCaption() {
+    public Optional<Text> getCaption() {
         return Optional.ofNullable(caption);
     }
 

@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
 public interface LangDict {
 
@@ -20,8 +20,8 @@ public interface LangDict {
         if (Files.isRegularFile(TabbyChat.dataFolder.resolve(path))) {
             return () -> Files.newInputStream(TabbyChat.dataFolder.resolve(path));
         } else {
-            ResourceLocation res = new ResourceLocation(TabbyChat.MODID, path);
-            IResourceManager resmgr = Minecraft.getInstance().getResourceManager();
+            Identifier res = new Identifier(TabbyChat.MODID, path);
+            ResourceManager resmgr = MinecraftClient.getInstance().getResourceManager();
             return () -> resmgr.getResource(res).getInputStream();
         }
     }

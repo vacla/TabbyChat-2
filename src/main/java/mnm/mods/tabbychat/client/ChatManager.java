@@ -16,12 +16,11 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import mnm.mods.tabbychat.util.DateTimeTypeAdapter;
 import mnm.mods.tabbychat.util.config.ValueMap;
 import mnm.mods.tabbychat.util.text.TextBuilder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumTypeAdapterFactory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 
@@ -52,9 +51,9 @@ public class ChatManager implements Chat {
     private static ChatManager instance;
 
     private Gson gson = new GsonBuilder()
-            .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
+            .registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
             .registerTypeAdapter(Style.class, new Style.Serializer())
-            .registerTypeAdapterFactory(new EnumTypeAdapterFactory())
+            .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
             .registerTypeHierarchyAdapter(Channel.class, new ChannelTypeAdapter(this))
             .registerTypeAdapter(LocalDateTime.class, new DateTimeTypeAdapter())
             .create();
@@ -154,12 +153,12 @@ public class ChatManager implements Chat {
     }
 
     @Override
-    public void addMessage(Channel channel, ITextComponent message) {
+    public void addMessage(Channel channel, Text message) {
         addMessage(channel, message, 0);
     }
 
-    public void addMessage(Channel channel, ITextComponent text, int id) {
-        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent.Pre(text.deepCopy(), id, channel);
+    public void addMessage(Channel channel, Text text, int id) {
+        MessageAddedToChannelEvent event = new MessageAddedToChannelEvent.Pre(text.copy(), id, channel);
         if (MinecraftForge.EVENT_BUS.post(event) || event.getText() == null) {
             return;
         }
@@ -170,7 +169,7 @@ public class ChatManager implements Chat {
             removeMessages(channel, id);
         }
 
-        int uc = Minecraft.getInstance().ingameGUI.getTicks();
+        int uc = MinecraftClient.getInstance().inGameHud.getTicks();
         ChatMessage msg = new ChatMessage(uc, text, id, true);
         List<ChatMessage> messages = getChannelMessages(channel);
         messages.add(0, msg);
@@ -244,10 +243,10 @@ public class ChatManager implements Chat {
             this.messages.putAll(root.getMessages());
             ChatBox.getInstance().addChannels(root.getActive());
 
-            ITextComponent chat = new TextBuilder()
+            Text chat = new TextBuilder()
                     // TODO use translation
                     .text("Chat log from " + root.getTime())
-                    .format(TextFormatting.GRAY)
+                    .format(Formatting.GRAY)
                     .build();
 
             for (Channel c : getChannels()) {

@@ -2,14 +2,14 @@ package mnm.mods.tabbychat.client.settings;
 
 import mnm.mods.tabbychat.util.config.SettingsFile;
 
-import java.nio.file.Path;
+import java.io.File;
 
 public class TabbySettings extends SettingsFile {
 
     public GeneralSettings general = new GeneralSettings();
     public AdvancedSettings advanced = new AdvancedSettings();
 
-    public TabbySettings(Path parent) {
-        super(parent.resolve("tabbychat.json"));
+    public TabbySettings(File parent) {
+        super(new File(parent, "tabbychat.json").toPath());
     }
 }

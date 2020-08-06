@@ -5,7 +5,8 @@ import com.google.common.collect.ImmutableList;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.config.Value;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -80,14 +81,14 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float parTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         ILocation loc = this.getLocation();
-        fill(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), 0xff000000);
-        String string = mc.fontRenderer.trimStringToWidth(text, loc.getWidth());
-        int xPos = loc.getXCenter() - mc.fontRenderer.getStringWidth(string) / 2;
+        fill(matrixStack, loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight(), 0xff000000);
+        String string = mc.textRenderer.trimToWidth(text, loc.getWidth());
+        int xPos = loc.getXCenter() - mc.textRenderer.getWidth(string) / 2;
         int yPos = loc.getYCenter() - 4;
-        mc.fontRenderer.drawString(string, xPos, yPos, getPrimaryColorProperty().getHex());
-        renderBorders(loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight());
+        mc.textRenderer.draw(matrixStack, string, xPos, yPos, getPrimaryColorProperty().getHex());
+        renderBorders(matrixStack, loc.getXPos(), loc.getYPos(), loc.getXWidth(), loc.getYHeight());
     }
 
     @Override
@@ -103,6 +104,6 @@ public class GuiSettingEnum<T> extends GuiSetting<T> {
         if (namer != null) {
             text = namer.apply(this.value);
         }
-        this.text = I18n.format(text);
+        this.text = I18n.translate(text);
     }
 }

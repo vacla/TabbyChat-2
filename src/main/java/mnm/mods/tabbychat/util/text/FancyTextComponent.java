@@ -1,38 +1,40 @@
 package mnm.mods.tabbychat.util.text;
 
 import com.google.common.collect.Streams;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.text.BaseText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
-import java.util.Iterator;
 import java.util.stream.Stream;
 
-public class FancyTextComponent extends TextComponent {
+public class FancyTextComponent extends BaseText
+{
 
-    private final ITextComponent text;
+    private final Text text;
     private FancyTextStyle style;
 
-    public FancyTextComponent(ITextComponent parent) {
+    public FancyTextComponent(MutableText parent) {
         if (parent instanceof FancyTextComponent)
             throw new IllegalArgumentException("Parent text cannot be fancy");
         this.text = parent;
     }
 
     @Override
-    public String getUnformattedComponentText() {
-        return text.getUnformattedComponentText();
+    public String getRawString() {
+        return text.getString();
     }
 
     @Override
-    public ITextComponent shallowCopy() {
-        ITextComponent text = this.text.shallowCopy();
+    public LiteralText copy() {
+        Text text = this.text.shallowCopy();
         FancyTextComponent fcc = new FancyTextComponent(text);
         fcc.setFancyStyle(getFancyStyle().createCopy());
         return fcc;
     }
 
     @Override
-    public Iterator<ITextComponent> iterator() {
+    public Iterator<Text> iterator() {
         // don't iterate using the vanilla components
         return Streams.stream(this.text.iterator())
                 .map(it -> it instanceof FancyTextComponent ? it
@@ -40,11 +42,11 @@ public class FancyTextComponent extends TextComponent {
     }
 
     @Override
-    public Stream<ITextComponent> stream() {
-        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap(ITextComponent::stream));
+    public Stream<Text> stream() {
+        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap(Text::stream));
     }
 
-    public ITextComponent getText() {
+    public Text getText() {
         return text;
     }
 

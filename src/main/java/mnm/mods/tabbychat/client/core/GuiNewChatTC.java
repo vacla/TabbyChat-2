@@ -11,10 +11,10 @@ import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.client.gui.ChatBox;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.NewChatGui;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 
 import java.util.List;
 import java.util.Set;
@@ -22,9 +22,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GuiNewChatTC extends NewChatGui {
+public class GuiNewChatTC extends ChatHud
+{
 
-    private final Minecraft mc;
+    private final MinecraftClient mc;
     private final TabbyChatClient tc;
     private final ChatBox chatbox;
 
@@ -33,7 +34,7 @@ public class GuiNewChatTC extends NewChatGui {
 
     private static GuiNewChatTC instance;
 
-    public GuiNewChatTC(Minecraft minecraft, TabbyChatClient tc) {
+    public GuiNewChatTC(MinecraftClient minecraft, TabbyChatClient tc) {
         super(minecraft);
 
         instance = this;
@@ -42,7 +43,7 @@ public class GuiNewChatTC extends NewChatGui {
         this.tc = tc;
 
         this.chatbox = new ChatBox(tc.getSettings());
-        this.prevScreenHeight = mc.mainWindow.getHeight();
+        this.prevScreenHeight = mc.getWindow().getHeight();
 
         MinecraftForge.EVENT_BUS.register(new GuiChatTC(chatbox));
     }
@@ -57,34 +58,34 @@ public class GuiNewChatTC extends NewChatGui {
     }
 
     @Override
-    public void refreshChat() {
+    public void reset() {
         chatbox.tick();
     }
 
     @Override
-    public void clearChatMessages(boolean sent) {
+    public void clear(boolean sent) {
         checkThread(() -> {
             ChatManager.instance().clearMessages();
             if (sent) {
-                this.getSentMessages().clear();
+                this.getMessageHistory().clear();
             }
         });
     }
 
     @Override
     public void render(int i) {
-        if (prevScreenHeight != mc.mainWindow.getHeight() || prevScreenWidth != mc.mainWindow.getWidth()) {
+        if (prevScreenHeight != mc.getWindow().getHeight() || prevScreenWidth != mc.getWindow().getWidth()) {
 
-            chatbox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
+            chatbox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.getWindow().getWidth(), mc.getWindow().getHeight());
 
-            prevScreenWidth = mc.mainWindow.getWidth();
-            prevScreenHeight = mc.mainWindow.getHeight();
+            prevScreenWidth = mc.getWindow().getWidth();
+            prevScreenHeight = mc.getWindow().getHeight();
         }
 
-        if (getChatOpen())
+        if (isChatFocused())
             return;
 
-        double scale = mc.gameSettings.chatScale;
+        double scale = mc.options.chatScale;
 
         GlStateManager.popMatrix(); // ignore what GuiIngame did.
         GlStateManager.pushMatrix();
@@ -92,8 +93,8 @@ public class GuiNewChatTC extends NewChatGui {
         // Scale it accordingly
         GlStateManager.scaled(scale, scale, 1.0D);
 
-        int mouseX = (int) mc.mouseHelper.getMouseX();
-        int mouseY = (int) (-mc.mouseHelper.getMouseY() - 1);
+        int mouseX = (int) mc.mouse.getX();
+        int mouseY = (int) (-mc.mouse.getY() - 1);
         chatbox.render(mouseX, mouseY, 0);
 
         GlStateManager.popMatrix();
@@ -101,11 +102,11 @@ public class GuiNewChatTC extends NewChatGui {
     }
 
     @Override
-    public void printChatMessageWithOptionalDeletion(ITextComponent ichat, int id) {
-        checkThread(() -> this.addMessage(ichat, id));
+    public void addMessage(Text ichat, int id) {
+        checkThread(() -> this.addMessageTC(ichat, id));
     }
 
-    public void addMessage(ITextComponent ichat, int id) {
+    public void addMessageTC(Text ichat, int id) {
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(DefaultChannel.INSTANCE);
@@ -141,8 +142,8 @@ public class GuiNewChatTC extends NewChatGui {
     }
 
     private void checkThread(Runnable runnable) {
-        if (!mc.isOnExecutionThread()) {
-            mc.enqueue(runnable);
+        if (!mc.isOnThread()) {
+            mc.execute(runnable);
             TabbyChat.logger.warn(TCMarkers.CHATBOX, "Tried to modify chat from thread {}. To prevent a crash, it has been scheduled on the main thread.", Thread.currentThread().getName(), new Exception());
         } else {
             runnable.run();
@@ -157,23 +158,23 @@ public class GuiNewChatTC extends NewChatGui {
 
     @Nonnull
     @Override
-    public List<String> getSentMessages() {
-        return super.getSentMessages();
+    public List<String> getMessageHistory() {
+        return super.getMessageHistory();
     }
 
     @Override
     @Nullable
-    public ITextComponent getTextComponent(double clickX, double clickY) {
+    public Style getText(double clickX, double clickY) {
         return chatbox.getChatArea().getTextComponent((int) clickX, (int) clickY);
     }
 
     @Override
-    public int getChatHeight() {
+    public int getHeight() {
         return chatbox.getChatArea().getLocation().getHeight();
     }
 
     @Override
-    public int getChatWidth() {
+    public int getWidth() {
         return chatbox.getChatArea().getLocation().getWidth();
     }
 

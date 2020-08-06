@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.util;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resource.language.I18n;
 
 import java.util.regex.Pattern;
 
@@ -27,6 +27,6 @@ public enum ChannelPatterns {
 
     @Override
     public String toString() {
-        return I18n.format(translation);
+        return I18n.translate(translation);
     }
 }

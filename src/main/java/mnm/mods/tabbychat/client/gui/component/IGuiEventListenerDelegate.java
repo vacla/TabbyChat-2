@@ -1,10 +1,11 @@
 package mnm.mods.tabbychat.client.gui.component;
 
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.Element;
 
-public interface IGuiEventListenerDelegate extends IGuiEventListener {
+public interface IGuiEventListenerDelegate extends Element
+{
 
-    IGuiEventListener delegate();
+    Element delegate();
 
     @Override
     default void mouseMoved(double p_212927_1_, double p_212927_3_) {

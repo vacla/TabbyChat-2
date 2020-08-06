@@ -1,19 +1,17 @@
 package mnm.mods.tabbychat.client.extra.spell;
 
 import com.google.common.collect.Lists;
-import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.event.SpellCheckEvent;
-import com.swabunga.spell.event.SpellChecker;
-import com.swabunga.spell.event.StringWordTokenizer;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionary;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellChecker;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.StringWordTokenizer;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.client.resources.Language;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.resource.VanillaResourceType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.LanguageDefinition;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -25,9 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
-public class Spellcheck implements ISelectiveResourceReloadListener {
+public class Spellcheck implements SynchronousResourceReloadListener
+{
 
     private final Path userFile;
 
@@ -101,14 +99,12 @@ public class Spellcheck implements ISelectiveResourceReloadListener {
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
-        if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
-            loadCurrentLanguage();
-        }
+    public void apply(ResourceManager resourceManager) {
+        loadCurrentLanguage();
     }
 
     private void loadCurrentLanguage() {
-        Language lang = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
+        LanguageDefinition lang = MinecraftClient.getInstance().getLanguageManager().getLanguage();
         try {
             loadUserDictionary();
             loadDictionary(LangDict.fromLanguage(lang.getCode()));
