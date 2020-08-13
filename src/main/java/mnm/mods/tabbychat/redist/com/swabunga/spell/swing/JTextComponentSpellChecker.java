@@ -17,16 +17,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-package com.swabunga.spell.swing;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.swing;
 
-import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.engine.SpellDictionaryCachedDichoDisk;
-import com.swabunga.spell.event.DocumentWordTokenizer;
-import com.swabunga.spell.event.SpellCheckEvent;
-import com.swabunga.spell.event.SpellCheckListener;
-import com.swabunga.spell.event.SpellChecker;
-import com.swabunga.spell.swing.autospell.AutoSpellEditorKit;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionary;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryCachedDichoDisk;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.DocumentWordTokenizer;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckListener;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellChecker;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell.AutoSpellEditorKit;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -35,7 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import com.swabunga.spell.swing.autospell.*;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell.*;
 
 /** This class spellchecks a JTextComponent throwing up a Dialog everytime
  *  it encounters a misspelled word.
@@ -165,9 +165,9 @@ public class JTextComponentSpellChecker implements SpellCheckListener {
   public void stopAutoSpellCheck(JEditorPane pane){
   	EditorKit	kit;
   	Document	doc;
-  	if(pane.getEditorKit() instanceof com.swabunga.spell.swing.autospell.AutoSpellEditorKit){
+  	if(pane.getEditorKit() instanceof mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell.AutoSpellEditorKit){
   		doc=pane.getDocument();
-  		kit=((com.swabunga.spell.swing.autospell.AutoSpellEditorKit)pane.getEditorKit()).getStyledEditorKit();
+  		kit=((mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell.AutoSpellEditorKit)pane.getEditorKit()).getStyledEditorKit();
   		pane.setEditorKit(kit);
   		pane.setDocument(doc);
   	}

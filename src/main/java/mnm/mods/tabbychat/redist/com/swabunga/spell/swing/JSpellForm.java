@@ -29,10 +29,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * 2) Altered the ADD_CMD action (Line 196). Now adds the misspelled word to the dictionary unless
  *    a new word is typed which does not match the current suggestion. A confirm dialog is shown.
  */
-package com.swabunga.spell.swing;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.swing;
 
-import com.swabunga.spell.engine.Word;
-import com.swabunga.spell.event.SpellCheckEvent;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.Word;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;

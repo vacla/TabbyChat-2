@@ -17,12 +17,15 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ChatArea extends GuiComponent {
 
@@ -221,23 +224,20 @@ public class ChatArea extends GuiComponent {
                 List<ChatMessage> list = this.getChat();
                 if (linePos >= 0 && linePos < list.size()) {
                     ChatMessage chatline = list.get(linePos);
-                    float x = actual.getXPos() + 3;
+                    AtomicReference<Float> x = new AtomicReference<>((float) actual.getXPos() + 3);
 
-                    for (Text ichatcomponent : ChatTextUtils.getMessageWithOptionalTimestamp(chatline)) {
-                        if (ichatcomponent instanceof LiteralText) {
+                    int finalClickX = clickX;
+                    ChatTextUtils.getMessageWithOptionalTimestamp(chatline).visit((style, text) -> {
+                        // clean it up
+                        String clean = MixinChatMessages.invokeGetRenderedChatMessage(text);
+                        // get it's width, then scale it.
+                        x.updateAndGet(v -> new Float((float) (v + this.mc.textRenderer.getWidth(clean) * scale)));
 
-                            // get the text of the component, no children.
-                            String text = ichatcomponent.getString();
-                            // clean it up
-                            String clean = MixinChatMessages.invokeGetRenderedChatMessage(text);
-                            // get it's width, then scale it.
-                            x += this.mc.textRenderer.getWidth(clean) * scale;
-
-                            if (x > clickX) {
-                                return ichatcomponent;
-                            }
+                        if (x.get() > finalClickX) {
+                            return Optional.of(new LiteralText(text).setStyle(style));
                         }
-                    }
+                        return Optional.empty();
+                    }, Style.EMPTY);
                 }
             }
         }

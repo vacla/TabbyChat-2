@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-package com.swabunga.spell.swing.autospell;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell;
 
 import java.awt.*;
 import java.util.*;
@@ -25,8 +25,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
-import com.swabunga.spell.event.*;
-import com.swabunga.spell.engine.*;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.*;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.*;
 
 /**
  * This class handles the actual autospelling by implementing some listeners
@@ -168,7 +168,7 @@ public class AutoSpellCheckHandler extends MouseAdapter implements DocumentListe
 				popup=new JPopupMenu();
 				repList=new ReplaceListener(docTok);
 				for(int i=0;i<suggestions.size();i++) {
-					com.swabunga.spell.engine.Word w = (com.swabunga.spell.engine.Word) suggestions.get(i);
+					mnm.mods.tabbychat.redist.com.swabunga.spell.engine.Word w = (mnm.mods.tabbychat.redist.com.swabunga.spell.engine.Word) suggestions.get(i);
 					item = new JMenuItem(w.getWord());
 					item.setActionCommand(w.getWord());
 					item.addActionListener(repList);

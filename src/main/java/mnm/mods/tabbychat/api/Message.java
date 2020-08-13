@@ -2,7 +2,7 @@ package mnm.mods.tabbychat.api;
 
 import java.time.LocalDateTime;
 
-import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
 
 /**
  * Represents a message.
@@ -14,7 +14,7 @@ public interface Message {
      *
      * @return The message
      */
-    Text getMessage();
+    MutableText getMessage();
 
     /**
      * Gets the date that this message was sent.

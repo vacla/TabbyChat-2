@@ -1,16 +1,19 @@
 package mnm.mods.tabbychat.mixin;
 
+import mnm.mods.tabbychat.client.core.GuiChatTC;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Style;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
-
-import javax.annotation.Nullable;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
-public interface MixinScreen
+public abstract class MixinScreen
 {
-    @Invoker
-    void invokeRenderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int i, int j);
+    @Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At("TAIL"))
+    private void init(MinecraftClient client, int width, int height, CallbackInfo ci)
+    {
+        GuiChatTC.initGui(client);
+    }
 }

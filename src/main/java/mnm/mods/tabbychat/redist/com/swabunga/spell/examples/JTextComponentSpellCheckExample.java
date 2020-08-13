@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 
-package com.swabunga.spell.examples;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.examples;
 
-import com.swabunga.spell.engine.*;
-import com.swabunga.spell.swing.JTextComponentSpellChecker;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.*;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.swing.JTextComponentSpellChecker;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;

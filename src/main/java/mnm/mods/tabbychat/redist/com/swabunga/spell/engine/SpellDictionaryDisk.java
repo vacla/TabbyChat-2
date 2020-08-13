@@ -18,7 +18,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 /* Created by bgalbs on Jan 30, 2003 at 11:38:39 PM */
-package com.swabunga.spell.engine;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.engine;
 
 import java.io.*;
 import java.util.*;

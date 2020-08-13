@@ -1,12 +1,8 @@
 package mnm.mods.tabbychat.util.text;
 
-import com.google.common.collect.Streams;
-import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public class FancyTextComponent extends BaseText
 {
@@ -21,30 +17,28 @@ public class FancyTextComponent extends BaseText
     }
 
     @Override
-    public String getRawString() {
+    public String getString() {
         return text.getString();
     }
 
     @Override
-    public LiteralText copy() {
-        Text text = this.text.shallowCopy();
+    public BaseText copy()
+    {
+        MutableText text = this.text.shallowCopy();
         FancyTextComponent fcc = new FancyTextComponent(text);
         fcc.setFancyStyle(getFancyStyle().createCopy());
         return fcc;
     }
 
     @Override
-    public Iterator<Text> iterator() {
+    public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
         // don't iterate using the vanilla components
-        return Streams.stream(this.text.iterator())
-                .map(it -> it instanceof FancyTextComponent ? it
-                        : new FancyTextComponent(it).setFancyStyle(this.getFancyStyle())).iterator();
+        return this.text.visit((style, text) -> {
+            new FancyTextComponent(new LiteralText(text)).setFancyStyle(this.getFancyStyle());
+            return Optional.empty();
+        }, Style.EMPTY);
     }
 
-    @Override
-    public Stream<Text> stream() {
-        return Streams.concat(Stream.of(this), getSiblings().stream().flatMap(Text::stream));
-    }
 
     public Text getText() {
         return text;

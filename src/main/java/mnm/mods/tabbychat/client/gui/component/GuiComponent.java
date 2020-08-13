@@ -10,10 +10,14 @@ import mnm.mods.tabbychat.util.Vec2i;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -304,7 +308,65 @@ public abstract class GuiComponent extends AbstractButtonWidget
         int uw = modal.getWidth();
         int uh = modal.getHeight();
 
-        GuiUtils.drawContinuousTexturedBox(modal.getResourceLocation(), x, y, u, v, w, h, uw, uh, 2, blitOffset);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(modal.getResourceLocation());
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
+        int fillerWidth = uw - 2 - 2;
+        int fillerHeight = uh - 2 - 2;
+        int canvasWidth = width - 2 - 2;
+        int canvasHeight = height - 2 - 2;
+        int xPasses = canvasWidth / fillerWidth;
+        int remainderWidth = canvasWidth % fillerWidth;
+        int yPasses = canvasHeight / fillerHeight;
+        int remainderHeight = canvasHeight % fillerHeight;
+
+        // Draw Border
+        // Top Left
+        drawTexturedModalRect(x, y, u, v, 2, 2, getZOffset());
+        // Top Right
+        drawTexturedModalRect(x + 2 + canvasWidth, y, u + 2 + fillerWidth, v, 2, 2, getZOffset());
+        // Bottom Left
+        drawTexturedModalRect(x, y + 2 + canvasHeight, u, v + 2 + fillerHeight, 2, 2, getZOffset());
+        // Bottom Right
+        drawTexturedModalRect(x + 2 + canvasWidth, y + 2 + canvasHeight, u + 2 + fillerWidth, v + 2 + fillerHeight, 2, 2, getZOffset());
+
+        for (int i = 0; i < xPasses + (remainderWidth > 0 ? 1 : 0); i++)
+        {
+            // Top Border
+            drawTexturedModalRect(x + 2 + (i * fillerWidth), y, u + 2, v, (i == xPasses ? remainderWidth : fillerWidth), 2, getZOffset());
+            // Bottom Border
+            drawTexturedModalRect(x + 2 + (i * fillerWidth), y + 2 + canvasHeight, u + 2, v + 2 + fillerHeight, (i == xPasses ? remainderWidth : fillerWidth), 2, getZOffset());
+
+            // Throw in some filler for good measure
+            for (int j = 0; j < yPasses + (remainderHeight > 0 ? 1 : 0); j++)
+                drawTexturedModalRect(x + 2 + (i * fillerWidth), y + 2 + (j * fillerHeight), u + 2, v + 2, (i == xPasses ? remainderWidth : fillerWidth), (j == yPasses ? remainderHeight : fillerHeight), getZOffset());
+        }
+
+        // Side Borders
+        for (int j = 0; j < yPasses + (remainderHeight > 0 ? 1 : 0); j++)
+        {
+            // Left Border
+            drawTexturedModalRect(x, y + 2 + (j * fillerHeight), u, v + 2, 2, (j == yPasses ? remainderHeight : fillerHeight), getZOffset());
+            // Right Border
+            drawTexturedModalRect(x + 2 + canvasWidth, y + 2 + (j * fillerHeight), u + 2 + fillerWidth, v + 2, 2, (j == yPasses ? remainderHeight : fillerHeight), getZOffset());
+        }
+
+    }
+
+    public static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height, float zLevel)
+    {
+        final float uScale = 1f / 0x100;
+        final float vScale = 1f / 0x100;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder wr = tessellator.getBuffer();
+        wr.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        wr.vertex(x        , y + height, zLevel).texture( u          * uScale, ((v + height) * vScale)).next();
+        wr.vertex(x + width, y + height, zLevel).texture((u + width) * uScale, ((v + height) * vScale)).next();
+        wr.vertex(x + width, y         , zLevel).texture((u + width) * uScale, ( v           * vScale)).next();
+        wr.vertex(x        , y         , zLevel).texture( u          * uScale, ( v           * vScale)).next();
+        tessellator.draw();
     }
 }

@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.api.events;
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.text.MutableText;
 
-public abstract class MessageAddedToChannelEvent extends Event {
+public abstract class MessageAddedToChannelEvent /*extends Event*/ {
 
     protected MutableText text;
     protected int id;
@@ -27,7 +27,7 @@ public abstract class MessageAddedToChannelEvent extends Event {
         return channel;
     }
 
-    @Cancelable
+    //@Cancelable
     public static class Pre extends MessageAddedToChannelEvent {
 
         public Pre(MutableText text, int id, Channel channel) {

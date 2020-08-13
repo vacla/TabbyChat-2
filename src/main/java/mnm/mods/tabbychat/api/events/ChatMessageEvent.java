@@ -3,18 +3,18 @@ package mnm.mods.tabbychat.api.events;
 import com.google.common.collect.Sets;
 import mnm.mods.tabbychat.api.Channel;
 import net.minecraft.text.Text;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+//import net.minecraftforge.eventbus.api.Cancelable;
+//import net.minecraftforge.eventbus.api.Event;
 
 import java.util.Set;
 
-public abstract class ChatMessageEvent extends Event {
+public abstract class ChatMessageEvent /*extends Event*/ {
 
     /**
      * Used to listen to chat and modify it. Can also select which channels it
      * goes to.
      */
-    @Cancelable
+    //@Cancelable
     public static class ChatReceivedEvent extends ChatMessageEvent {
 
         public Text text;

@@ -18,14 +18,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.swabunga.spell.jedit;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.jedit;
 
-import com.swabunga.spell.engine.Configuration;
-import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryDisk;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.event.*;
-import com.swabunga.spell.swing.JSpellDialog;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.Configuration;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionary;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryDisk;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.*;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.swing.JSpellDialog;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;

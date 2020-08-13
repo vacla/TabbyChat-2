@@ -42,7 +42,7 @@ public class ChatTextUtils {
         }
     }
 
-    public static Text getMessageWithOptionalTimestamp(Message msg) {
+    public static MutableText getMessageWithOptionalTimestamp(Message msg) {
         GeneralSettings settings = TabbyChatClient.getInstance().getSettings().general;
         if (msg.getDateTime() != null && settings.timestampChat.get()) {
 

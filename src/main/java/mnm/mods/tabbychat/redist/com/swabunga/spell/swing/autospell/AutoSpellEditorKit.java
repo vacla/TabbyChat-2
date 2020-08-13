@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package com.swabunga.spell.swing.autospell;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.swing.autospell;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -5,30 +5,32 @@ import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.gui.ChatBox;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.mixin.MixinChatScreenInterface;
+import mnm.mods.tabbychat.mixin.MixinCommandSuggestor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraftforge.client.event.GuiScreenEvent;
+/*import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;*/
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
 public class GuiChatTC {
 
-    private final ChatBox chat;
-
+    private static ChatBox chat;
     public GuiChatTC(ChatBox chat) {
-        this.chat = chat;
+        GuiChatTC.chat = chat;
     }
 
     @SuppressWarnings("unchecked")
-    @SubscribeEvent
-    public void initGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof ChatScreen) {
-            ChatScreen guichat = (ChatScreen) event.getGui();
+    public static void initGui(MinecraftClient client) {
+        if (client.currentScreen instanceof ChatScreen) {
+            ChatScreen guichat = (ChatScreen) client.currentScreen;
             AbstractChannel chan = chat.getActiveChannel();
             if (((MixinChatScreenInterface)guichat).getChatFieldText().isEmpty()
                     && !chan.isPrefixHidden()
@@ -39,7 +41,7 @@ public class GuiChatTC {
             ((MixinChatScreenInterface) guichat).setChatField(text.getTextField());
             text.setValue(((MixinChatScreenInterface) guichat).getChatFieldText());
 
-            //chat.getChatInput().setTextFormatter(MixinCommandSuggestor.invokeGetLastPlayerNameStart);
+            chat.getChatInput().setTextFormatter(((MixinCommandSuggestor)((MixinChatScreenInterface) guichat).getCommandSuggestor())::invokeProvideRenderText);
             text.getTextField().setChangedListener(((MixinChatScreenInterface) guichat)::invokeOnChatFieldUpdate);
 
             List<Element> children = (List<Element>) guichat.children();
@@ -54,23 +56,23 @@ public class GuiChatTC {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onRenderChat(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            event.setCanceled(true);
-            this.chat.update((ChatScreen) event.getGui());
-            this.chat.render(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+    public static boolean onRenderChat(MatrixStack matrixStack, Screen screen, int mouseX, int mouseY, float tickDelta) {
+        if (screen instanceof ChatScreen) {
+            chat.update((ChatScreen) screen);
+            chat.render(matrixStack, mouseX, mouseY, tickDelta);
+            return false;
         }
+        return true;
     }
 
-    @SubscribeEvent
-    public void onKeyPressed(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (keyPressed((ChatScreen) event.getGui(), event.getKeyCode())
-                    || this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
-                event.setCanceled(true);
+    public static boolean onKeyPressed(ParentElement screen, int keyCode, int scanCode, int modifiers) {
+        if (screen instanceof ChatScreen) {
+            if (keyPressed((ChatScreen) screen, keyCode)
+                    || chat.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
             }
         }
+        return false;
     }
 
     @SubscribeEvent
@@ -127,10 +129,10 @@ public class GuiChatTC {
         }
     }
 
-    private boolean keyPressed(ChatScreen guichat, int key) {
+    private static boolean keyPressed(ChatScreen guichat, int key) {
         if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
             MinecraftClient.getInstance().inGameHud.getChatHud().resetScroll();
-            GuiText text = this.chat.getChatInput().getTextField();
+            GuiText text = chat.getChatInput().getTextField();
             guichat.sendMessage(text.getValue());
             text.setValue(((MixinChatScreenInterface)guichat).getChatFieldText());
 

@@ -6,7 +6,6 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.client.ChatManager;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;

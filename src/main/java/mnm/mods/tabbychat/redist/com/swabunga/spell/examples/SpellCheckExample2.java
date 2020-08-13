@@ -17,14 +17,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-package com.swabunga.spell.examples;
+package mnm.mods.tabbychat.redist.com.swabunga.spell.examples;
 
-import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.event.SpellCheckEvent;
-import com.swabunga.spell.event.SpellCheckListener;
-import com.swabunga.spell.event.SpellChecker;
-import com.swabunga.spell.event.StringWordTokenizer;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionary;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckListener;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellChecker;
+import mnm.mods.tabbychat.redist.com.swabunga.spell.event.StringWordTokenizer;
 
 import java.io.BufferedReader;
 import java.io.File;
