@@ -8,7 +8,6 @@ import mnm.mods.tabbychat.mixin.MixinChatScreenInterface;
 import mnm.mods.tabbychat.mixin.MixinCommandSuggestor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.ChatScreen;
 /*import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -49,9 +48,8 @@ public class GuiChatTC {
         }
     }
 
-    @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen && event.phase == TickEvent.Phase.END) {
+    public static void onTick() {
+        if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen) {
             chat.tick();
         }
     }
@@ -65,68 +63,53 @@ public class GuiChatTC {
         return true;
     }
 
-    public static boolean onKeyPressed(ParentElement screen, int keyCode, int scanCode, int modifiers) {
+    public static boolean onKeyPressed(Screen screen, int keyCode, int scanCode, int modifiers) {
         if (screen instanceof ChatScreen) {
-            if (keyPressed((ChatScreen) screen, keyCode)
-                    || chat.keyPressed(keyCode, scanCode, modifiers)) {
-                return true;
-            }
+            return keyPressed((ChatScreen) screen, keyCode) || chat.keyPressed(keyCode, scanCode, modifiers);
         }
         return false;
     }
 
-    @SubscribeEvent
-    public void onKeyReleased(GuiScreenEvent.KeyboardKeyReleasedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
-                event.setCanceled(true);
-            }
+    public static boolean onKeyReleased(Screen parentElement, int keyCode, int scanCode, int modifiers) {
+        if (parentElement instanceof ChatScreen) {
+            return chat.keyPressed(keyCode, scanCode, modifiers);
         }
+        return false;
     }
 
-    @SubscribeEvent
-    public void onCharTyped(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.charTyped(event.getCodePoint(), event.getModifiers())) {
-                event.setCanceled(true);
-            }
+    public static boolean onCharTyped(Element parentElement, char chr, int keyCode) {
+        if (parentElement instanceof ChatScreen) {
+            return chat.charTyped(chr, keyCode);
         }
+        return false;
     }
 
-    @SubscribeEvent
-    public void onMouseClicked(GuiScreenEvent.MouseClickedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseClicked(event.getMouseX(), event.getMouseY(), event.getButton())) {
-                event.setCanceled(true);
-            }
+    public static boolean onMouseClicked(Screen parentElement, double mouseX, double mouseY, int button) {
+        if (parentElement instanceof ChatScreen) {
+            return chat.mouseClicked(mouseX, mouseY, button);
         }
-    }
-    @SubscribeEvent
-    public void onMouseReleased(GuiScreenEvent.MouseReleasedEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseReleased(event.getMouseX(), event.getMouseY(), event.getButton())) {
-                event.setCanceled(true);
-            }
-        }
+        return false;
     }
 
-    @SubscribeEvent
-    public void onMouseDragged(GuiScreenEvent.MouseDragEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseDragged(event.getMouseX(), event.getMouseY(), event.getMouseButton(), event.getDragX(), event.getDragY())) {
-                event.setCanceled(true);
-            }
+    public static boolean onMouseReleased(Screen parentElement, double mouseX, double mouseY, int button) {
+        if (parentElement instanceof ChatScreen) {
+            return chat.mouseReleased(mouseX, mouseY, button);
         }
+        return false;
     }
 
-
-    @SubscribeEvent
-    public void onMouseScrolled(GuiScreenEvent.MouseScrollEvent.Pre event) {
-        if (event.getGui() instanceof ChatScreen) {
-            if (this.chat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta())) {
-                event.setCanceled(true);
-            }
+    public static boolean onMouseDragged(Element element, double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (element instanceof ChatScreen) {
+            return chat.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
+        return false;
+    }
+
+    public static boolean onMouseScrolled(Screen guichat, double mouseX, double mouseY, double amount) {
+        if (guichat instanceof ChatScreen) {
+            return chat.mouseScrolled(mouseX, mouseY, amount);
+        }
+        return false;
     }
 
     private static boolean keyPressed(ChatScreen guichat, int key) {

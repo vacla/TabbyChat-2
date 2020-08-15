@@ -13,6 +13,7 @@ import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.client.gui.ChatBox;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -73,7 +74,7 @@ public class GuiNewChatTC extends ChatHud
     }
 
     @Override
-    public void render(int i) {
+    public void render(MatrixStack matrixStack, int i) {
         if (prevScreenHeight != mc.getWindow().getHeight() || prevScreenWidth != mc.getWindow().getWidth()) {
 
             chatbox.onScreenHeightResize(prevScreenWidth, prevScreenHeight, mc.getWindow().getWidth(), mc.getWindow().getHeight());
@@ -95,7 +96,7 @@ public class GuiNewChatTC extends ChatHud
 
         int mouseX = (int) mc.mouse.getX();
         int mouseY = (int) (-mc.mouse.getY() - 1);
-        chatbox.render(mouseX, mouseY, 0);
+        chatbox.render(matrixStack, mouseX, mouseY, 0);
 
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix(); // push to avoid gl errors
@@ -110,7 +111,7 @@ public class GuiNewChatTC extends ChatHud
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(DefaultChannel.INSTANCE);
-        MinecraftForge.EVENT_BUS.post(chatevent);
+        //MinecraftForge.EVENT_BUS.post(chatevent);
         // chat filters
         ichat = chatevent.text;
         id = chatevent.id;
@@ -165,7 +166,7 @@ public class GuiNewChatTC extends ChatHud
     @Override
     @Nullable
     public Style getText(double clickX, double clickY) {
-        return chatbox.getChatArea().getTextComponent((int) clickX, (int) clickY);
+        return chatbox.getChatArea().getText((int) clickX, (int) clickY);
     }
 
     @Override
