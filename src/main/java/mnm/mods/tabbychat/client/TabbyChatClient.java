@@ -15,6 +15,7 @@ import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.text.Text;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;*/
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -37,8 +39,8 @@ import java.util.regex.Matcher;
 public class TabbyChatClient {
 
     private static TabbyChatClient instance;
-    private ChatManager chatManager;
-    private Spellcheck spellcheck;
+    private static ChatManager chatManager;
+    private static Spellcheck spellcheck;
 
     private TabbySettings settings;
     private ServerSettings serverSettings;
@@ -84,8 +86,8 @@ public class TabbyChatClient {
         return serverSettings;
     }
 
-    @SubscribeEvent
-    public void onLoadingFinished(FMLLoadCompleteEvent event) {
+    //@SubscribeEvent
+    public static void onLoadingFinished() {
 
         TabbyChat.logger.info(TCMarkers.STARTUP, "Minecraft load complete!");
 
@@ -97,10 +99,10 @@ public class TabbyChatClient {
 
         chatManager = ChatManager.instance();
 
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::removeChannelTags);
-        MinecraftForge.EVENT_BUS.register(new ChatAddonAntiSpam(chatManager));
-        MinecraftForge.EVENT_BUS.register(new FilterAddon(chatManager));
-        MinecraftForge.EVENT_BUS.register(new ChatLogging(FMLPaths.GAMEDIR.get().resolve("logs/chat")));
+        //this.removeChannelTags;
+        new ChatAddonAntiSpam(chatManager);
+        new FilterAddon(chatManager);
+        new ChatLogging(MinecraftClient.getInstance().runDirectory.toPath().resolve("logs/chat"));
     }
 
     private void removeChannelTags(MessageAddedToChannelEvent.Pre event) {
@@ -129,9 +131,9 @@ public class TabbyChatClient {
 
     }
 
-    @Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
-    private static class StartListener {
-        @SubscribeEvent
+    //@Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
+    /*private static class StartListener {
+        //@SubscribeEvent
         public static void onGuiOpen(TickEvent.ClientTickEvent event) {
             // Do the first tick, then unregister self.
             // essentially an on-thread startup complete listener
@@ -139,25 +141,25 @@ public class TabbyChatClient {
             hookIntoChat(mc.inGameHud, new GuiNewChatTC(mc, instance));
             MinecraftForge.EVENT_BUS.unregister(StartListener.class);
         }
-    }
+    }*/
 
-    @Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
-    private static class NullScreenListener {
+    //@Mod.EventBusSubscriber(modid = TabbyChat.MODID, value = Dist.CLIENT)
+    public static class NullScreenListener {
         // Listens for a null GuiScreen. Null means we're in-game
         // TODO workaround for lack of client network events. Replace when possible
-        @SubscribeEvent
-        public static void onGuiOpen(GuiOpenEvent event) {
-            if (event.getGui() == null) {
+        //@SubscribeEvent
+        public static void onGuiOpen(Screen screen) {
+            if (screen == null) {
                 instance.getServerSettings();
             }
         }
     }
 
-    private static void hookIntoChat(InGameHud guiIngame, ChatHud chat) {
+    /*private static void hookIntoChat(InGameHud guiIngame, ChatHud chat) {
         try {
             TabbyChat.logger.info(TCMarkers.STARTUP, "Successfully hooked into chat.");
         } catch (Throwable e) {
             TabbyChat.logger.fatal(TCMarkers.STARTUP, "Unable to hook into chat. This is bad.", e);
         }
-    }
+    }*/
 }

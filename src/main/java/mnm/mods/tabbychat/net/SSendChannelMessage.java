@@ -6,9 +6,6 @@ import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.client.ChatManager;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -33,7 +30,7 @@ public class SSendChannelMessage {
         buffer.writeText(message);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context) {
+    public void handle(Supplier<SNetworkVersion.Context> context) {
         context.get().enqueueWork(() -> {
             ChatManager chat = ChatManager.instance();
             Optional<Channel> chan = chat.parseChannel(channel);

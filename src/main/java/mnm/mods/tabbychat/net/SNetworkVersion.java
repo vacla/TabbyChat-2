@@ -4,10 +4,17 @@ import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.gui.NotificationToast;
+import mnm.mods.tabbychat.mixin.MixinClientConnection;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.thread.ThreadExecutor;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +36,7 @@ public class SNetworkVersion {
         buffer.writeString(version);
     }
 
-    /*public void handle(Supplier<NetworkEvent.Context> context) {
+    public void handle(Supplier<Context> context) {
         context.get().enqueueWork(() -> {
 
             if (!version.equals(TabbyChat.PROTOCOL_VERSION)) {
@@ -38,16 +45,16 @@ public class SNetworkVersion {
             }
         });
         context.get().setPacketHandled(true);
-    }*/
+    }
 
     public static class Context
     {
-        private final NetworkManager networkManager;
+        private final ClientConnection networkManager;
 
         /**
-         * The {@link NetworkDirection} this message has been received on.
+         * The {@link NetworkSide} this message has been received on.
          */
-        private final NetworkDirection networkDirection;
+        private final NetworkSide networkDirection;
 
         /**
          * The packet dispatcher for this event. Sends back to the origin.
@@ -55,18 +62,28 @@ public class SNetworkVersion {
         private final PacketDispatcher packetDispatcher;
         private boolean packetHandled;
 
-        Context(NetworkManager netHandler, NetworkDirection networkDirection, int index)
+        /*Context(ClientConnection netHandler, NetworkSide networkDirection, int index)
         {
-            this(netHandler, networkDirection, new PacketDispatcher.NetworkManagerDispatcher(netHandler, index, networkDirection.reply()::buildPacket));
-        }
+            this(netHandler, networkDirection, new PacketDispatcher.NetworkManagerDispatcher(netHandler, index, networkDirection::buildPacket));
+        }*/
 
-        Context(NetworkManager networkManager, NetworkDirection networkDirection, PacketDispatcher dispatcher) {
+        Context(ClientConnection networkManager, NetworkSide networkDirection, PacketDispatcher dispatcher) {
             this.networkManager = networkManager;
             this.networkDirection = networkDirection;
             this.packetDispatcher = dispatcher;
         }
 
-        public NetworkDirection getDirection() {
+        public NetworkSide getDirection(boolean otherSide) {
+            if(otherSide)
+            {
+                switch (networkDirection)
+                {
+                    case CLIENTBOUND:
+                        return NetworkSide.SERVERBOUND;
+                    case SERVERBOUND:
+                        return NetworkSide.CLIENTBOUND;
+                }
+            }
             return networkDirection;
         }
 
@@ -75,7 +92,7 @@ public class SNetworkVersion {
         }
 
         public <T> Attribute<T> attr(AttributeKey<T> key) {
-            return networkManager.channel().attr(key);
+            return ((MixinClientConnection)networkManager).getChannel().attr(key);
         }
 
         public void setPacketHandled(boolean packetHandled) {
@@ -88,11 +105,11 @@ public class SNetworkVersion {
         }
 
         public CompletableFuture<Void> enqueueWork(Runnable runnable) {
-            ThreadTaskExecutor<?> executor = LogicalSidedProvider.WORKQUEUE.get(getDirection().getReceptionSide());
+            ThreadExecutor<?> executor = LogicalSidedProvider.WORKQUEUE.get(getDirection(true));
             // Must check ourselves as Minecraft will sometimes delay tasks even when they are received on the client thread
             // Same logic as ThreadTaskExecutor#runImmediately without the join
-            if (!executor.isOnExecutionThread()) {
-                return executor.deferTask(runnable); // Use the internal method so thread check isn't done twice
+            if (!executor.isOnThread()) {
+                return executor.submit(runnable); // Use the internal method so thread check isn't done twice
             } else {
                 runnable.run();
                 return CompletableFuture.completedFuture(null);
@@ -105,16 +122,16 @@ public class SNetworkVersion {
         @Nullable
         public ServerPlayerEntity getSender()
         {
-            INetHandler netHandler = networkManager.getNetHandler();
-            if (netHandler instanceof ServerPlayNetHandler)
+            PacketListener netHandler = networkManager.getPacketListener();
+            if (netHandler instanceof ServerPlayNetworkHandler)
             {
-                ServerPlayNetHandler netHandlerPlayServer = (ServerPlayNetHandler) netHandler;
+                ServerPlayNetworkHandler netHandlerPlayServer = (ServerPlayNetworkHandler) netHandler;
                 return netHandlerPlayServer.player;
             }
             return null;
         }
 
-        public NetworkManager getNetworkManager() {
+        public ClientConnection getNetworkManager() {
             return networkManager;
         }
     }

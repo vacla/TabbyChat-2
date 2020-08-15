@@ -35,12 +35,12 @@ public class TCTellCommand {
     private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, TARGETS);
-        String channel = "#" + StringArgumentType.getString(context, CHANNEL);
+        /*String channel = "#" + StringArgumentType.getString(context, CHANNEL);
         Text message = TextArgumentType.getTextArgument(context, MESSAGE);
 
         for (ServerPlayerEntity player : players) {
-            TabbyChat.sendTo(player, channel, message);
-        }
+            TabbyChat.send(player, channel, message);
+        }*/
 
         return players.size();
     }
