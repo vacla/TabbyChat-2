@@ -17,8 +17,8 @@ public interface LangDict {
 
     static LangDict fromLanguage(String lang) {
         String path = String.format("dicts/%s.dic", lang);
-        if (Files.isRegularFile(TabbyChat.dataFolder.resolve(path))) {
-            return () -> Files.newInputStream(TabbyChat.dataFolder.resolve(path));
+        if (Files.isRegularFile(TabbyChat.dataFolder.toPath().resolve(path))) {
+            return () -> Files.newInputStream(TabbyChat.dataFolder.toPath().resolve(path));
         } else {
             Identifier res = new Identifier(TabbyChat.MODID, path);
             ResourceManager resmgr = MinecraftClient.getInstance().getResourceManager();

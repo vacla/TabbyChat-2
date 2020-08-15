@@ -6,7 +6,6 @@ import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.Channel;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -21,7 +20,6 @@ public class ChatAddonAntiSpam {
         this.chatManager = chatManager;
     }
 
-    @SubscribeEvent
     public void onMessageAdded(MessageAddedToChannelEvent.Pre event) {
 
         boolean enabled = TabbyChatClient.getInstance().getSettings().general.antiSpam.get();

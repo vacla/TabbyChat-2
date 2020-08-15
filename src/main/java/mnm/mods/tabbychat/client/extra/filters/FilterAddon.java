@@ -51,7 +51,6 @@ public class FilterAddon {
                 .orElse("");
     }
 
-    @SubscribeEvent
     public void onChatRecieved(ChatReceivedEvent message) {
         ServerSettings settings = TabbyChatClient.getInstance().getServerSettings();
         if (settings == null) {

@@ -77,7 +77,7 @@ public class TabbyChatClient {
             if (serverSettings == null || !serverSettings.getSocket().equals(address)) {
 
                 // Set server settings
-                serverSettings = new ServerSettings(TabbyChat.dataFolder, address);
+                serverSettings = new ServerSettings(TabbyChat.dataFolder.toPath(), address);
                 onJoinServer();
             }
         }
@@ -155,8 +155,6 @@ public class TabbyChatClient {
 
     private static void hookIntoChat(InGameHud guiIngame, ChatHud chat) {
         try {
-            ObfuscationReflectionHelper.setPrivateValue(IngameGui.class, guiIngame, chat, "field_73840_e");
-//            guiIngame.persistantChatGUI = chat;
             TabbyChat.logger.info(TCMarkers.STARTUP, "Successfully hooked into chat.");
         } catch (Throwable e) {
             TabbyChat.logger.fatal(TCMarkers.STARTUP, "Unable to hook into chat. This is bad.", e);

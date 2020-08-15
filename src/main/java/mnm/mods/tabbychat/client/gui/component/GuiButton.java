@@ -1,6 +1,5 @@
 package mnm.mods.tabbychat.client.gui.component;
 
-import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.util.Dim;
@@ -17,7 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * A {@link net.minecraft.client.gui.widget.ButtonWidget} for the GuiComponent system.

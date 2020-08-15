@@ -4,11 +4,11 @@ import io.netty.channel.local.LocalAddress;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
+//import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
 import mnm.mods.tabbychat.util.IPUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+//import net.minecraftforge.eventbus.api.EventPriority;
+//import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,7 +46,7 @@ public class ChatLogging {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    /*@SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChatReceived(ChatReceivedEvent message) {
         if (TabbyChatClient.getInstance().getSettings().general.logChat.get()) {
 
@@ -57,7 +57,7 @@ public class ChatLogging {
 
             out.println(LOG_FORMAT.format(Calendar.getInstance().getTime()) + message.text.getString());
         }
-    }
+    }*/
 
     /**
      * Checks that the date hasn't changed. If it has, updates date and out and

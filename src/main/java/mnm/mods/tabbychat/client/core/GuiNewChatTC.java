@@ -14,6 +14,7 @@ import mnm.mods.tabbychat.client.gui.ChatBox;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -46,7 +47,7 @@ public class GuiNewChatTC extends ChatHud
         this.chatbox = new ChatBox(tc.getSettings());
         this.prevScreenHeight = mc.getWindow().getHeight();
 
-        MinecraftForge.EVENT_BUS.register(new GuiChatTC(chatbox));
+        new GuiChatTC(chatbox);
     }
 
     public static GuiNewChatTC getInstance() {
@@ -104,10 +105,10 @@ public class GuiNewChatTC extends ChatHud
 
     @Override
     public void addMessage(Text ichat, int id) {
-        checkThread(() -> this.addMessageTC(ichat, id));
+        checkThread(() -> this.addMessage((MutableText)ichat, id));
     }
 
-    public void addMessageTC(Text ichat, int id) {
+    public void addMessage(MutableText ichat, int id) {
         // chat listeners
         ChatReceivedEvent chatevent = new ChatReceivedEvent(ichat, id);
         chatevent.channels.add(DefaultChannel.INSTANCE);

@@ -17,6 +17,7 @@ import mnm.mods.tabbychat.util.DateTimeTypeAdapter;
 import mnm.mods.tabbychat.util.config.ValueMap;
 import mnm.mods.tabbychat.util.text.TextBuilder;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -154,12 +155,12 @@ public class ChatManager implements Chat {
 
     @Override
     public void addMessage(Channel channel, Text message) {
-        addMessage(channel, message, 0);
+        addMessage(channel, (MutableText)message, 0);
     }
 
-    public void addMessage(Channel channel, Text text, int id) {
+    public void addMessage(Channel channel, MutableText text, int id) {
         MessageAddedToChannelEvent event = new MessageAddedToChannelEvent.Pre(text.copy(), id, channel);
-        if (MinecraftForge.EVENT_BUS.post(event) || event.getText() == null) {
+        if (event.getText() == null) {
             return;
         }
         text = event.getText();
@@ -176,7 +177,7 @@ public class ChatManager implements Chat {
 
         trimMessages(messages, settings().advanced.historyLen.get());
 
-        MinecraftForge.EVENT_BUS.post(new MessageAddedToChannelEvent.Post(text, id, channel));
+        new MessageAddedToChannelEvent.Post(text, id, channel);
 
         save();
         markDirty(channel);
@@ -243,7 +244,7 @@ public class ChatManager implements Chat {
             this.messages.putAll(root.getMessages());
             ChatBox.getInstance().addChannels(root.getActive());
 
-            Text chat = new TextBuilder()
+            MutableText chat = new TextBuilder()
                     // TODO use translation
                     .text("Chat log from " + root.getTime())
                     .format(Formatting.GRAY)

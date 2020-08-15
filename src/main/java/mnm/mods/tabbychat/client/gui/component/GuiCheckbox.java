@@ -1,12 +1,12 @@
 package mnm.mods.tabbychat.client.gui.component;
 
+import mnm.mods.tabbychat.client.util.GuiUtils;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
 /**
  * A checkbox, representing a boolean input.
