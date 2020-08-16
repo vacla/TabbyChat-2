@@ -1,11 +1,11 @@
 package mnm.mods.tabbychat.client.extra.spell;
 
 import com.google.common.collect.Lists;
-import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionary;
-import mnm.mods.tabbychat.redist.com.swabunga.spell.engine.SpellDictionaryHashMap;
-import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
-import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellChecker;
-import mnm.mods.tabbychat.redist.com.swabunga.spell.event.StringWordTokenizer;
+import com.swabunga.spell.engine.SpellDictionary;
+import com.swabunga.spell.engine.SpellDictionaryHashMap;
+import com.swabunga.spell.event.SpellCheckEvent;
+import com.swabunga.spell.event.SpellChecker;
+import com.swabunga.spell.event.StringWordTokenizer;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import net.minecraft.client.MinecraftClient;
@@ -49,6 +49,7 @@ public class Spellcheck implements SynchronousResourceReloadListener
 
     private InputStream openLangStream(LangDict lang) throws IOException {
         try {
+            TabbyChat.logger.warn(lang);
             return lang.openStream();
         } catch (FileNotFoundException e) {
             if (lang == LangDict.ENGLISH) {

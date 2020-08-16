@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "package": "mnm.mods.tabbychat.mixin",
+  "minVersion": "0.7",
+  "client": [
+    "AbstractButtonWidgetInterface",
+    "MixinChatMessages",
+    "MixinChatScreenInterface",
+    "MixinClientConnection",
+    "MixinClientPlayNetworkHandler",
+    "MixinCommandSuggestor",
+    "MixinGameRenderer",
+    "MixinInGameHud",
+    "MixinKeyBoard",
+    "MixinMinecraftClient",
+    "MixinMouse",
+    "MixinScreen",
+    "MixinScreenImpl",
+    "MixinTextFieldWidget"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

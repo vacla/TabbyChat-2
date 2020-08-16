@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui.component;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.client.util.GuiUtils;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Dim;
@@ -76,6 +77,7 @@ public abstract class GuiComponent extends AbstractButtonWidget
         }
         y -= mc.textRenderer.fontHeight * list.length;
 
+
         Vec2i point = getLocation().getPoint();
         int sw = mc.getWindow().getScaledWidth();
         int w2 = w;
@@ -87,7 +89,7 @@ public abstract class GuiComponent extends AbstractButtonWidget
         x += getLocation().getXPos();
         y += getLocation().getYPos();
         // put it on top
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         fill(matrixStack, x - 2, y - 2, x + w + 2, y + mc.textRenderer.fontHeight * list.length + 1, 0xcc333333);
         renderBorders(matrixStack, x - 2, y - 2, x + w + 2, y + mc.textRenderer.fontHeight * list.length + 1,
                 0xccaaaaaa);
@@ -95,7 +97,7 @@ public abstract class GuiComponent extends AbstractButtonWidget
             mc.textRenderer.drawWithShadow(matrixStack, s, x, y, this.getPrimaryColorProperty().getHex());
             y += mc.textRenderer.fontHeight;
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     protected void renderBorders(MatrixStack matrixStack, int x1, int y1, int x2, int y2, int color) {

@@ -3,7 +3,7 @@ package mnm.mods.tabbychat.client.extra.spell;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import mnm.mods.tabbychat.redist.com.swabunga.spell.event.SpellCheckEvent;
+import com.swabunga.spell.event.SpellCheckEvent;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.util.Color;

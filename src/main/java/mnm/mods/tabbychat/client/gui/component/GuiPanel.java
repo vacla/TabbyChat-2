@@ -35,21 +35,21 @@ public class GuiPanel extends GuiComponent implements ParentElement
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
+        super.render(matrixStack, mouseX, mouseY, parTicks);
+
         getLayout().ifPresent(layout -> layout.layoutComponents(this));
-        this.components.stream()
+        this.children().stream()
                 .filter(GuiComponent::isVisible)
                 .forEach(gc -> gc.render(matrixStack, mouseX, mouseY, parTicks));
-
-        super.render(matrixStack, mouseX, mouseY, parTicks);
     }
 
-    @Override
+    /*@Override
     public void renderCaption(MatrixStack matrixStack, int mouseX, int mouseY) {
         super.renderCaption(matrixStack, mouseX, mouseY);
         this.children().stream()
                 .filter(GuiComponent::isVisible)
                 .forEach(gc -> gc.renderCaption(matrixStack, mouseX, mouseY));
-    }
+    }*/
 
     @Override
     public void tick() {

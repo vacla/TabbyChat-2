@@ -8,6 +8,7 @@ import mnm.mods.tabbychat.mixin.MixinChatScreenInterface;
 import mnm.mods.tabbychat.mixin.MixinCommandSuggestor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.ChatScreen;
 /*import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -63,14 +64,14 @@ public class GuiChatTC {
         return true;
     }
 
-    public static boolean onKeyPressed(Screen screen, int keyCode, int scanCode, int modifiers) {
+    public static boolean onKeyPressed(ParentElement screen, int keyCode, int scanCode, int modifiers) {
         if (screen instanceof ChatScreen) {
             return keyPressed((ChatScreen) screen, keyCode) || chat.keyPressed(keyCode, scanCode, modifiers);
         }
         return false;
     }
 
-    public static boolean onKeyReleased(Screen parentElement, int keyCode, int scanCode, int modifiers) {
+    public static boolean onKeyReleased(ParentElement parentElement, int keyCode, int scanCode, int modifiers) {
         if (parentElement instanceof ChatScreen) {
             return chat.keyPressed(keyCode, scanCode, modifiers);
         }

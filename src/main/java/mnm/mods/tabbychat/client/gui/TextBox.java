@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck;
@@ -48,14 +49,14 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         }
     });
     private int cursorCounter;
-    private Spellcheck spellcheck;
+    //private Spellcheck spellcheck;
 
     private BiFunction<String, Integer, String> textFormatter = (text, offset) -> text;
     private String suggestion;
 
     TextBox() {
-        this.spellcheck = TabbyChatClient.getInstance().getSpellcheck();
-
+        //this.spellcheck = TabbyChatClient.getSpellcheck();
+        //TabbyChat.logger.warn("spellcheck: " + spellcheck);
         textField.getTextField().setMaxLength(ChatManager.MAX_CHAT_LENGTH);
         textField.getTextField().setFocusUnlocked(false);
         textField.getTextField().setHasBorder(false);
@@ -137,7 +138,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
             // test the end
             if (end >= 0 && end <= text.getString().length()) {
-                w = fr.getWidth(text.getString().substring(start < 0 ? 0 : start, end)) + 2;
+                w = fr.getWidth(text.getString().substring(Math.max(start, 0), end)) + 2;
             }
 
             final int LINE_Y = line + fr.fontHeight + 2;
@@ -259,6 +260,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     }
 
     private List<MutableText> getFormattedLines() {
+        Spellcheck spellcheck = TabbyChatClient.getSpellcheck();
         spellcheck.checkSpelling(getText());
         BiFunction<String, Integer, MutableText> formatter = textFormatter.andThen(new SpellingFormatter(spellcheck));
         List<MutableText> lines = new ArrayList<>();
@@ -297,7 +299,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         try {
             return IGuiEventListenerDelegate.super.charTyped(key, mods);
         } finally {
-            spellcheck.checkSpelling(getText());
+            TabbyChatClient.getSpellcheck().checkSpelling(getText());
         }
     }
 

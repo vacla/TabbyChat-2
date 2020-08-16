@@ -60,7 +60,7 @@ public class TabbyChatClient {
         return chatManager;
     }
 
-    public Spellcheck getSpellcheck() {
+    public static Spellcheck getSpellcheck() {
         return spellcheck;
     }
 
@@ -94,6 +94,7 @@ public class TabbyChatClient {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         spellcheck = new Spellcheck(TabbyChat.dataFolder.toPath());        // Keeps the current language updated whenever it is changed.
+        TabbyChat.logger.warn(spellcheck);
         ReloadableResourceManager irrm = (ReloadableResourceManager) mc.getResourceManager();
         irrm.registerListener(spellcheck);
 

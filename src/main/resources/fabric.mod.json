@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "tabbychat",
+  "name": "TabbyChat",
+  "version": "${mod_version}",
+  "description": "Chat overhaul",
+  "authors": [
+    "Arnevdl29"
+  ],
+  "contact": {
+    "homepage": "",
+    "issues": "https://github.com/vacla/TabbyChat/issues",
+    "sources": "https://github.com/vacla/TabbyChat",
+    "twitter": "https://twitter.com/ArneLangenbergh",
+    "discord": "https://discord.gg/VTHVVgt"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "mnm.mods.tabbychat.TabbyChat"
+    ]
+  },
+  "mixins": [
+    "mixins.tabbychat.json"
+  ],
+  "custom": {
+    "modmenu:clientsideOnly": true
+  }
+}

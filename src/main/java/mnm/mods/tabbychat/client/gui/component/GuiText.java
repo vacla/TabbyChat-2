@@ -60,6 +60,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
         this.textField.y = loc.getYPos();
         this.textField.setWidth(loc.getWidth());
         ((AbstractButtonWidgetInterface)this.textField).setHeight(loc.getHeight());
+        System.out.println(textField.getHeight());
     }
 
     @Override
