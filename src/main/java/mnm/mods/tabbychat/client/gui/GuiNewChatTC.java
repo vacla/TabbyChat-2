@@ -1,7 +1,7 @@
-package mnm.mods.tabbychat.client.core;
+package mnm.mods.tabbychat.client.gui;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
@@ -10,7 +10,6 @@ import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.ChannelStatus;
 import mnm.mods.tabbychat.api.events.ChatMessageEvent.ChatReceivedEvent;
-import mnm.mods.tabbychat.client.gui.ChatBox;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -89,18 +88,18 @@ public class GuiNewChatTC extends ChatHud
 
         double scale = mc.options.chatScale;
 
-        GlStateManager.popMatrix(); // ignore what GuiIngame did.
-        GlStateManager.pushMatrix();
+        RenderSystem.popMatrix(); // ignore what GuiIngame did.
+        RenderSystem.pushMatrix();
 
         // Scale it accordingly
-        GlStateManager.scaled(scale, scale, 1.0D);
+        RenderSystem.scaled(scale, scale, 1.0D);
 
         int mouseX = (int) mc.mouse.getX();
         int mouseY = (int) (-mc.mouse.getY() - 1);
         chatbox.render(matrixStack, mouseX, mouseY, 0);
 
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix(); // push to avoid gl errors
+        RenderSystem.popMatrix();
+        RenderSystem.pushMatrix(); // push to avoid gl errors
     }
 
     @Override

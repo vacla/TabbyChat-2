@@ -3,7 +3,6 @@ package mnm.mods.tabbychat.client;
 import mnm.mods.tabbychat.TCMarkers;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.api.events.MessageAddedToChannelEvent;
-import mnm.mods.tabbychat.client.core.GuiNewChatTC;
 import mnm.mods.tabbychat.client.extra.ChatAddonAntiSpam;
 import mnm.mods.tabbychat.client.extra.ChatLogging;
 import mnm.mods.tabbychat.client.extra.filters.FilterAddon;
@@ -13,8 +12,6 @@ import mnm.mods.tabbychat.client.settings.TabbySettings;
 import mnm.mods.tabbychat.util.ChannelPatterns;
 import mnm.mods.tabbychat.util.ChatTextUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.resource.ReloadableResourceManager;
@@ -31,7 +28,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.loading.FMLPaths;*/
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.regex.Matcher;

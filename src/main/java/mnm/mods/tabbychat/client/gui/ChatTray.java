@@ -2,6 +2,7 @@ package mnm.mods.tabbychat.client.gui;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.DefaultChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
@@ -45,10 +46,10 @@ public class ChatTray extends GuiPanel {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         if (mc.inGameHud.getChatHud().isChatFocused()) {
-            GlStateManager.enableBlend();
-            GlStateManager.color4f(1, 1, 1, (float) mc.options.chatOpacity);
+            RenderSystem.enableBlend();
+            RenderSystem.color4f(1, 1, 1, (float) mc.options.chatOpacity);
             drawModalCorners(MODAL);
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
         }
         super.render(matrixStack, mouseX, mouseY, parTicks);
     }
@@ -103,7 +104,7 @@ public class ChatTray extends GuiPanel {
 
         @Override
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
-            GlStateManager.enableBlend();
+            RenderSystem.enableBlend();
             ILocation loc = getLocation();
             int opac = (int) (mc.options.chatOpacity * 255) << 24;
             renderBorders(matrixStack, loc.getXPos() + 2, loc.getYPos() + 2, loc.getXWidth() - 2, loc.getYHeight() - 2, 0x999999 | opac);

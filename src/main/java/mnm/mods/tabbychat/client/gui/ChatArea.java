@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.ChatMessage;
@@ -93,9 +94,9 @@ public class ChatArea extends GuiComponent {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
 
         List<ChatMessage> visible = getVisibleChat();
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
         float opac = (float) mc.options.chatOpacity;
-        GlStateManager.color4f(1, 1, 1, opac);
+        RenderSystem.color4f(1, 1, 1, opac);
 
         drawModalCorners(MODAL);
 
@@ -108,8 +109,8 @@ public class ChatArea extends GuiComponent {
             drawChatLine(matrixStack, line, xPos, yPos);
         }
         setZOffset(0);
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableBlend();
     }
 
     private void drawChatLine(MatrixStack matrixStack, ChatMessage line, int xPos, int yPos) {
@@ -211,8 +212,6 @@ public class ChatArea extends GuiComponent {
             ILocation actual = getLocation();
             // check that cursor is in bounds.
             if (actual.contains(clickX, clickY)) {
-
-
                 double size = mc.textRenderer.fontHeight * scale;
                 double bottom = (actual.getYPos() + actual.getHeight());
 
@@ -231,7 +230,7 @@ public class ChatArea extends GuiComponent {
                         // clean it up
                         String clean = MixinChatMessages.invokeGetRenderedChatMessage(text);
                         // get it's width, then scale it.
-                        x.updateAndGet(v -> new Float((float) (v + this.mc.textRenderer.getWidth(clean) * scale)));
+                        x.updateAndGet(v -> (float) (v + this.mc.textRenderer.getWidth(clean) * scale));
 
                         if (x.get() > finalClickX) {
                             return Optional.of(new LiteralText(text).setStyle(style));

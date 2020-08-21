@@ -5,7 +5,7 @@ import static mnm.mods.tabbychat.util.Translation.*;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.ChatChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.core.GuiNewChatTC;
+import mnm.mods.tabbychat.client.gui.GuiNewChatTC;
 import mnm.mods.tabbychat.client.settings.ServerSettings;
 import mnm.mods.tabbychat.util.Color;
 import mnm.mods.tabbychat.util.Location;

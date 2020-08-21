@@ -192,11 +192,9 @@ public class ChatBox extends GuiPanel {
         active = channel;
         setStatus(active, ChannelStatus.ACTIVE);
 
-        runActivationCommand(channel);
-
     }
 
-    private ServerSettings server() {
+    /*private ServerSettings server() {
         return TabbyChatClient.getInstance().getServerSettings();
     }
 
@@ -228,7 +226,7 @@ public class ChatBox extends GuiPanel {
             }
             MinecraftClient.getInstance().player.sendChatMessage(cmd);
         }
-    }
+    }*/
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
@@ -236,9 +234,6 @@ public class ChatBox extends GuiPanel {
 
         if (mc.inGameHud.getChatHud().isChatFocused()) {
             update(chat);
-            txtChatInput.active = true;
-            txtChatInput.setVisible(true);
-            txtChatInput.render(matrixStack, mouseX, mouseY, parTicks);
             ((MixinChatScreenInterface)chat).getCommandSuggestor().render(matrixStack, mouseX, mouseY);
 
             Style itextcomponent = this.mc.inGameHud.getChatHud().getText(mouseX, mouseY);
@@ -246,7 +241,6 @@ public class ChatBox extends GuiPanel {
                 ((MixinScreenImpl)chat).invokeRenderTextHoverEffect(matrixStack, itextcomponent, mouseX, mouseY);
             }
         }
-        //System.out.println(mouseX + " " + mouseY + " " + parTicks);
         super.render(matrixStack, mouseX, mouseY, parTicks);
     }
 

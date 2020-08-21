@@ -46,6 +46,7 @@ public class GuiWrappedComponent<T extends GuiComponent> extends GuiComponent im
 
     @Override
     public void setLocation(ILocation location) {
+        System.out.println("wrapper: "+wrapper);
         wrapper.setLocation(location);
     }
 

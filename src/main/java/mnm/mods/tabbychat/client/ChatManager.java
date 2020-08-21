@@ -205,7 +205,7 @@ public class ChatManager implements Chat {
 
     public void clearMessages() {
         this.messages.clear();
-        this.msgsplit.clear();
+        msgsplit.clear();
 
         this.allChannels.clear();
         this.allChannels.put("*", DefaultChannel.INSTANCE);

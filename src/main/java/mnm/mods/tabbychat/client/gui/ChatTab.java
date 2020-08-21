@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.client.AbstractChannel;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.api.ChannelStatus;
@@ -69,8 +70,8 @@ public class ChatTab extends GuiButton {
                 || (status != null && status.compareTo(ChannelStatus.PINGED) > 0 && TabbyChatClient.getInstance().getSettings().general.unreadFlashing.get())
                 || TabbyChatClient.getInstance().getSettings().advanced.visibility.get() == LocalVisibility.ALWAYS) {
             ILocation loc = getLocation();
-            GlStateManager.enableBlend();
-            GlStateManager.color4f(1, 1, 1, (float) mc.options.chatOpacity);
+            RenderSystem.enableBlend();
+            RenderSystem.color4f(1, 1, 1, (float) mc.options.chatOpacity);
             drawModalCorners(getStatusModal(loc.contains(mouseX, mouseY)));
 
             int txtX = loc.getXCenter();
@@ -79,7 +80,7 @@ public class ChatTab extends GuiButton {
             Color primary = getPrimaryColorProperty();
             int color = Color.getColor(primary.getRed(), primary.getGreen(), primary.getBlue(), (int) (mc.options.chatOpacity * 255));
             this.drawCenteredString(matrixStack, mc.textRenderer, this.getText(), txtX, txtY, color);
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
         }
     }
 

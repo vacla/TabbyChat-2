@@ -1,12 +1,14 @@
 package mnm.mods.tabbychat.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.TabbyChat;
 import mnm.mods.tabbychat.client.ChatManager;
 import mnm.mods.tabbychat.client.TabbyChatClient;
 import mnm.mods.tabbychat.client.extra.spell.Spellcheck;
 import mnm.mods.tabbychat.client.extra.spell.SpellingFormatter;
 import mnm.mods.tabbychat.client.gui.component.GuiComponent;
+import mnm.mods.tabbychat.client.gui.component.GuiPanel;
 import mnm.mods.tabbychat.client.gui.component.GuiText;
 import mnm.mods.tabbychat.client.gui.component.IGuiEventListenerDelegate;
 import mnm.mods.tabbychat.mixin.MixinTextFieldWidget;
@@ -76,13 +78,12 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
         drawModalCorners(MODAL);
-        GlStateManager.disableBlend();
+        RenderSystem.disableBlend();
 
         drawText(matrixStack);
         drawCursor(matrixStack);
-
     }
 
     private void drawCursor(MatrixStack matrixStack) {
@@ -142,8 +143,9 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
             }
 
             final int LINE_Y = line + fr.fontHeight + 2;
-
+//System.out.println("ds");
             if (w != 0) {
+                //System.out.println("test");
                 if (x >= 0 && w > 0) {
                     // start and end on same line
                     drawSelectionBox(x + 2, line, x + w, LINE_Y);
@@ -218,6 +220,8 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         y1 += loc.getYPos();
         y2 += loc.getYPos();
 
+        //System.out.println(x1 + " " + x2 + " " + y1 + " " + y2);
+
         ((MixinTextFieldWidget)this.textField.getTextField()).invokeDrawSelectionHighlight(x1, y1, x2, y2);
 //        if (x1 < x2) {
 //            int i = x1;
@@ -256,7 +260,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     }
 
     public List<StringRenderable> getWrappedLines() {
-        return fr.wrapLines(textField.getMessage(), getLocation().getWidth());
+        return fr.wrapLines(textField.getTextField().getMessage(), getLocation().getWidth());
     }
 
     private List<MutableText> getFormattedLines() {

@@ -43,13 +43,13 @@ public class GuiPanel extends GuiComponent implements ParentElement
                 .forEach(gc -> gc.render(matrixStack, mouseX, mouseY, parTicks));
     }
 
-    /*@Override
+    @Override
     public void renderCaption(MatrixStack matrixStack, int mouseX, int mouseY) {
         super.renderCaption(matrixStack, mouseX, mouseY);
         this.children().stream()
                 .filter(GuiComponent::isVisible)
                 .forEach(gc -> gc.renderCaption(matrixStack, mouseX, mouseY));
-    }*/
+    }
 
     @Override
     public void tick() {
@@ -72,6 +72,7 @@ public class GuiPanel extends GuiComponent implements ParentElement
      * @param constraints  The constraints
      */
     public void add(GuiComponent guiComponent, Object constraints) {
+        System.out.println("guicom"+ guiComponent);
         if (guiComponent != null) {
             guiComponent.setParent(this);
             components.add(guiComponent);

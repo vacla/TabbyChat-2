@@ -1,7 +1,7 @@
 package mnm.mods.tabbychat.mixin;
 
 import mnm.mods.tabbychat.client.TabbyChatClient;
-import mnm.mods.tabbychat.client.core.GuiNewChatTC;
+import mnm.mods.tabbychat.client.gui.GuiNewChatTC;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;

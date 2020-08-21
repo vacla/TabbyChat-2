@@ -1,6 +1,6 @@
 package mnm.mods.tabbychat.mixin;
 
-import mnm.mods.tabbychat.client.core.GuiChatTC;
+import mnm.mods.tabbychat.client.gui.GuiChatTC;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
