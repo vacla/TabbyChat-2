@@ -202,6 +202,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
         yPos -= fr.fontHeight + 2;
 
         boolean flag2 = textField.getTextField().getCursor() < getText().length() || getText().length() >= ((MixinTextFieldWidget)textField.getTextField()).invokeGetMaxLength();
+        //System.out.println(flag2);
 
         int x = loc.getXPos() + 3;
         if (!flag2 && suggestion != null) {
@@ -260,18 +261,13 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
     }
 
     public List<StringRenderable> getWrappedLines() {
-        return fr.wrapLines(textField.getTextField().getMessage(), getLocation().getWidth());
+        return fr.wrapLines(StringRenderable.plain(textField.getValue()), getLocation().getWidth());
     }
 
     private List<MutableText> getFormattedLines() {
-        Spellcheck spellcheck = TabbyChatClient.getSpellcheck();
-        spellcheck.checkSpelling(getText());
-        BiFunction<String, Integer, MutableText> formatter = textFormatter.andThen(new SpellingFormatter(spellcheck));
         List<MutableText> lines = new ArrayList<>();
-        int length = 0;
         for (StringRenderable line : getWrappedLines()) {
-            lines.add(formatter.apply(line.getString(), length));
-            length += line.getString().length();
+            lines.add(new LiteralText(line.getString()));
         }
         return lines;
     }
@@ -300,11 +296,7 @@ public class TextBox extends GuiComponent implements IGuiEventListenerDelegate {
 
     @Override
     public boolean charTyped(char key, int mods) {
-        try {
-            return IGuiEventListenerDelegate.super.charTyped(key, mods);
-        } finally {
-            TabbyChatClient.getSpellcheck().checkSpelling(getText());
-        }
+        return IGuiEventListenerDelegate.super.charTyped(key, mods);
     }
 
     @Override

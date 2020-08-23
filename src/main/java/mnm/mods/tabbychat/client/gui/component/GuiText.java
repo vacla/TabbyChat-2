@@ -51,9 +51,7 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
 
     @Override
     public void setLocation(ILocation bounds) {
-        System.out.println(bounds);
         updateTextbox(bounds);
-        super.setLocation(bounds);
     }
 
     private void updateTextbox(ILocation loc) {
@@ -61,7 +59,6 @@ public class GuiText extends GuiComponent implements IGuiInput<String>, IGuiEven
         this.textField.y = loc.getYPos();
         this.textField.setWidth(loc.getWidth());
         ((AbstractButtonWidgetInterface)this.textField).setHeight(loc.getHeight());
-        System.out.println(textField.getHeight());
     }
 
     @Override

@@ -232,6 +232,7 @@ public class ChatBox extends GuiPanel {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float parTicks) {
         handleDragging(mouseX, mouseY);
 
+        super.render(matrixStack, mouseX, mouseY, parTicks);
         if (mc.inGameHud.getChatHud().isChatFocused()) {
             update(chat);
             ((MixinChatScreenInterface)chat).getCommandSuggestor().render(matrixStack, mouseX, mouseY);
@@ -241,7 +242,6 @@ public class ChatBox extends GuiPanel {
                 ((MixinScreenImpl)chat).invokeRenderTextHoverEffect(matrixStack, itextcomponent, mouseX, mouseY);
             }
         }
-        super.render(matrixStack, mouseX, mouseY, parTicks);
     }
 
     @Override

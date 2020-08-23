@@ -1,6 +1,7 @@
 package mnm.mods.tabbychat.client.gui.settings;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mnm.mods.tabbychat.util.Dim;
 import mnm.mods.tabbychat.util.ILocation;
 import mnm.mods.tabbychat.util.Location;
@@ -44,7 +45,7 @@ public class SettingsButton extends GuiButton {
         int y1 = loc.getYPos() + 1;
         int y2 = loc.getYHeight() - 1;
 
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
         getSecondaryColor().ifPresent(color -> fill(matrixStack, x1, y1, x2, y2, color.getHex()));
         String string = mc.textRenderer.trimToWidth(getText(), loc.getWidth());
         mc.textRenderer.draw(matrixStack, string, x1 + 10, loc.getYCenter() - 4, getPrimaryColorProperty().getHex());

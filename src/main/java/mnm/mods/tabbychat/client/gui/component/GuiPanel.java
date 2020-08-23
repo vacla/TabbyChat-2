@@ -72,7 +72,6 @@ public class GuiPanel extends GuiComponent implements ParentElement
      * @param constraints  The constraints
      */
     public void add(GuiComponent guiComponent, Object constraints) {
-        System.out.println("guicom"+ guiComponent);
         if (guiComponent != null) {
             guiComponent.setParent(this);
             components.add(guiComponent);
